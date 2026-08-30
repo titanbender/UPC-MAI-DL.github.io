@@ -4,9 +4,17 @@ A self-contained outdoor escape room for **Grønsund**, the sound between Falste
 Bogø and Møn in Denmark. History- and mystery-driven, 30–45 minutes, five stops,
 one phone per group.
 
-Open `index.html` in a phone browser. It is a single file with no build step, no
-dependencies and no back end. Load it once with signal and it runs offline;
-progress is kept in `localStorage`, so a locked phone does not lose the game.
+Two ways to run it, same game:
+
+- **`gronsund-casket-standalone.html`** — one 4 MB file with the narration
+  audio inlined. Nothing else needed: open it, AirDrop it, email it, put it on a
+  USB stick. This is the one to hand someone.
+- **`index.html` + `audio/`** — the same page with the MP3s as separate files.
+  Lighter to load and nicer in git; use it if you are hosting the game.
+
+No build step, no dependencies, no back end. Load once with signal and it runs
+offline; progress is kept in `localStorage`, so a locked phone does not lose the
+game.
 
 **Turn the volume up.** A narrator tells the story at every stop.
 

@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A 30-45 minute outdoor escape room for Gronsund on Falster, Denmark. Five stops, five centuries, one word. Runs on a phone.">
+<meta name="theme-color" content="#E3E7E3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#071417" media="(prefers-color-scheme: dark)">
+<style>
+  html,body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+</style>
+<title>The Grønsund Casket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap">
+<style>
+/* ── Tokens ─────────────────────────────────────────────────────────────
+   Day chart (light) is the base. Night chart redefines tokens only.      */
+:root{
+  --ground:#E3E7E3; --surface:#F5F6F2; --surface-2:#EAEEE9; --sunk:#D6DCD7;
+  --ink:#0F1C1C; --ink-soft:#425657; --ink-faint:#7A8C8B;
+  --line:#C7D0CB; --line-strong:#9EADA8;
+  --brand:#0E3B3E; --brand-2:#3F7268; --verdigris:#4F8377;
+  --flame:#A94B12; --flame-2:#D98A44; --flame-wash:#F0E2D2;
+  --good:#2C6B4E; --bad:#8E3320; --on-brand:#F5F6F2; --on-flame:#FFF6EC;
+  --shadow:0 1px 0 rgba(15,28,28,.06), 0 10px 30px -18px rgba(15,28,28,.5);
+  --font-display:"IM Fell English","Iowan Old Style",Georgia,"Times New Roman",serif;
+  --font-sc:"IM Fell English SC","IM Fell English",Georgia,serif;
+  --font-body:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --rule:1px solid var(--line);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#071417; --surface:#0D2025; --surface-2:#12292F; --sunk:#061114;
+    --ink:#E7EEEA; --ink-soft:#9CB2AF; --ink-faint:#688180;
+    --line:#1D3940; --line-strong:#31555C;
+    --brand:#8CC8BB; --brand-2:#6BAA9D; --verdigris:#4F8377;
+    --flame:#E2913F; --flame-2:#B4652A; --flame-wash:#22201A;
+    --good:#69C295; --bad:#E0805F; --on-brand:#04100F; --on-flame:#1A1005;
+    --shadow:0 1px 0 rgba(0,0,0,.4), 0 14px 34px -20px #000;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#071417; --surface:#0D2025; --surface-2:#12292F; --sunk:#061114;
+  --ink:#E7EEEA; --ink-soft:#9CB2AF; --ink-faint:#688180;
+  --line:#1D3940; --line-strong:#31555C;
+  --brand:#8CC8BB; --brand-2:#6BAA9D; --verdigris:#4F8377;
+  --flame:#E2913F; --flame-2:#B4652A; --flame-wash:#22201A;
+  --good:#69C295; --bad:#E0805F; --on-brand:#04100F; --on-flame:#1A1005;
+  --shadow:0 1px 0 rgba(0,0,0,.4), 0 14px 34px -20px #000;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--font-body); font-size:16px; line-height:1.6;
+  -webkit-text-size-adjust:100%; overflow-x:hidden;
+}
+/* faint chart hatching, both themes */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.55;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 47px, var(--line) 47px 48px),
+    repeating-linear-gradient(0deg, transparent 0 47px, var(--line) 47px 48px);
+  -webkit-mask-image:radial-gradient(120% 80% at 50% 0%, #000 10%, transparent 78%);
+  mask-image:radial-gradient(120% 80% at 50% 0%, #000 10%, transparent 78%);
+}
+.wrap{position:relative; z-index:1; max-width:36rem; margin:0 auto; padding:0 18px 132px}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+header.bar{
+  position:sticky; top:0; z-index:20; background:var(--ground);
+  border-bottom:var(--rule); box-shadow:0 8px 18px -18px rgba(0,0,0,.7);
+}
+.bar-in{max-width:36rem; margin:0 auto; padding:8px 18px; display:flex; align-items:center; gap:12px}
+.mark{font-family:var(--font-sc); font-size:15px; letter-spacing:.06em; color:var(--brand); white-space:nowrap}
+.bar-sp{flex:1}
+.clock{font-family:var(--font-mono); font-size:13px; font-variant-numeric:tabular-nums; color:var(--ink-soft); letter-spacing:.02em}
+.clock.over{color:var(--flame)}
+.iconbtn{
+  border:var(--rule); background:var(--surface); color:var(--ink-soft);
+  width:32px; height:32px; border-radius:2px; font-size:14px; line-height:1;
+  display:grid; place-items:center; cursor:pointer; padding:0;
+}
+.iconbtn:hover{color:var(--ink); border-color:var(--line-strong)}
+.splints{display:flex; gap:5px; padding:0 18px 8px; max-width:36rem; margin:0 auto; min-height:0}
+.splint{
+  font-family:var(--font-display); font-size:17px; line-height:1;
+  width:28px; height:30px; display:grid; place-items:center; position:relative;
+  border:1px solid var(--line-strong); background:var(--surface-2); color:var(--ink-faint);
+  clip-path:polygon(0 6%, 100% 0, 96% 100%, 4% 94%);
+}
+.splint.has{background:var(--flame-wash); border-color:var(--flame); color:var(--flame); font-weight:400}
+.splint sub{font-family:var(--font-mono); font-size:8px; position:absolute; right:3px; bottom:1px; opacity:.75}
+
+/* ── Type ───────────────────────────────────────────────────────────── */
+.eyebrow{
+  font-family:var(--font-sc); font-size:13px; letter-spacing:.12em;
+  color:var(--verdigris); margin:0 0 6px;
+}
+h1{font-family:var(--font-display); font-weight:400; font-size:clamp(2.4rem,11vw,3.4rem); line-height:1.02; margin:.1em 0 .2em; text-wrap:balance; letter-spacing:-.01em}
+h2{font-family:var(--font-display); font-weight:400; font-size:clamp(1.7rem,7vw,2.2rem); line-height:1.1; margin:0 0 .35em; text-wrap:balance}
+h3{font-family:var(--font-sc); font-weight:400; font-size:1rem; letter-spacing:.09em; margin:0 0 .5em; color:var(--brand)}
+p{margin:0 0 1em; max-width:34rem}
+.lede{font-size:1.06rem; color:var(--ink-soft)}
+.small{font-size:.86rem; color:var(--ink-soft)}
+.tiny{font-size:.78rem; color:var(--ink-faint)}
+em{font-style:italic}
+a{color:var(--flame); text-underline-offset:2px}
+hr.chart{border:0; height:4px; margin:26px 0; background:
+  linear-gradient(var(--line),var(--line)) 0 0/100% 1px no-repeat,
+  linear-gradient(var(--line),var(--line)) 0 3px/100% 1px no-repeat}
+
+/* ── Cards ──────────────────────────────────────────────────────────── */
+.card{
+  background:var(--surface); border:var(--rule); border-radius:2px;
+  padding:18px; margin:0 0 16px; box-shadow:var(--shadow);
+}
+.card.quiet{background:var(--surface-2); box-shadow:none}
+.scroll{
+  background:var(--surface-2); border-left:3px solid var(--verdigris);
+  padding:14px 16px; margin:0 0 16px; font-family:var(--font-display); font-size:1.08rem; line-height:1.55;
+}
+.scroll p:last-child{margin-bottom:0}
+.hist{border-top:var(--rule); margin-top:14px; padding-top:12px}
+.hist p{margin:0; font-size:.88rem; color:var(--ink-soft)}
+
+/* ledger / data */
+table.ledger{width:100%; border-collapse:collapse; font-family:var(--font-mono); font-size:.9rem; font-variant-numeric:tabular-nums}
+table.ledger td{padding:7px 0; border-bottom:1px dashed var(--line)}
+table.ledger td:last-child{text-align:right; white-space:nowrap; color:var(--brand); font-weight:500}
+table.ledger tr:last-child td{border-bottom:0}
+table.ledger tr.q td{color:var(--flame); font-weight:600}
+.tablewrap{overflow-x:auto}
+
+.verse{font-family:var(--font-display); font-size:1.1rem; line-height:1.75}
+.verse span{display:block}
+.notice{font-family:var(--font-display); font-size:1.06rem; line-height:1.8; letter-spacing:.005em}
+
+ul.clues{list-style:none; margin:0; padding:0; counter-reset:c}
+ul.clues li{
+  counter-increment:c; position:relative; padding:0 0 10px 30px; margin:0;
+  font-size:.95rem; border-bottom:1px dashed var(--line);
+}
+ul.clues li:last-child{border-bottom:0; padding-bottom:0}
+ul.clues li+li{padding-top:10px}
+ul.clues li::before{
+  content:counter(c); position:absolute; left:0; top:.15em;
+  font-family:var(--font-mono); font-size:.72rem; color:var(--flame);
+  border:1px solid var(--flame); width:18px; height:18px; display:grid; place-items:center; border-radius:50%;
+}
+ul.plain{margin:0 0 1em; padding-left:1.1em}
+ul.plain li{margin-bottom:.4em}
+
+/* ── Ice chart (station 2) ──────────────────────────────────────────── */
+.chartbox{overflow-x:auto; padding-bottom:4px}
+.icegrid{display:grid; grid-template-columns:16px repeat(6,1fr); gap:2px; min-width:288px}
+.icegrid .rl,.icegrid .cl{
+  font-family:var(--font-mono); font-size:.66rem; color:var(--ink-faint);
+  display:grid; place-items:center;
+}
+.cell{
+  position:relative; aspect-ratio:1; border:1px solid var(--line);
+  background:var(--surface-2); cursor:pointer; display:grid; place-items:center;
+  font-family:var(--font-mono); font-size:.7rem; color:var(--ink-faint); padding:0;
+  border-radius:1px; transition:background .12s ease;
+}
+.cell:hover{border-color:var(--line-strong)}
+.cell.feat{background:var(--surface); color:var(--brand); font-weight:600; border-color:var(--line-strong)}
+.cell.start{background:var(--flame-wash); border-color:var(--flame); color:var(--flame)}
+.cell.on{box-shadow:inset 0 0 0 2px var(--flame)}
+.cell .dot{width:7px; height:7px; border-radius:50%; background:var(--flame); position:absolute; right:3px; top:3px; display:none}
+.cell.on .dot{display:block}
+.legend{margin-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:2px 12px; font-size:.78rem; color:var(--ink-soft)}
+.legend b{font-family:var(--font-mono); font-weight:600; color:var(--brand); margin-right:5px}
+@media (max-width:400px){.legend{grid-template-columns:1fr}}
+
+/* ── Buttons & input ────────────────────────────────────────────────── */
+.btn{
+  font-family:var(--font-body); font-size:.95rem; font-weight:600; letter-spacing:.01em;
+  padding:13px 18px; border-radius:2px; border:1px solid var(--brand);
+  background:var(--brand); color:var(--on-brand); cursor:pointer; width:100%;
+  transition:transform .08s ease, filter .15s ease;
+}
+.btn:active{transform:translateY(1px)}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:transparent; color:var(--ink-soft); border-color:var(--line-strong)}
+.btn.ghost:hover{color:var(--ink); border-color:var(--ink-faint); filter:none}
+.btn.flame{background:var(--flame); border-color:var(--flame); color:var(--on-flame)}
+.btn.sm{padding:9px 12px; font-size:.84rem; width:auto}
+.btnrow{display:flex; gap:8px; flex-wrap:wrap}
+.btnrow .btn{width:auto; flex:1; min-width:120px}
+
+.answerbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
+  background:var(--ground); border-top:var(--rule); padding:10px 18px calc(10px + env(safe-area-inset-bottom));
+  box-shadow:0 -10px 24px -20px rgba(0,0,0,.8);
+}
+.answerbar .in{max-width:36rem; margin:0 auto; display:flex; gap:8px; align-items:stretch}
+input[type=text]{
+  flex:1; min-width:0; font-family:var(--font-mono); font-size:1rem; letter-spacing:.06em;
+  padding:12px 12px; border:1px solid var(--line-strong); border-radius:2px;
+  background:var(--surface); color:var(--ink); text-transform:uppercase;
+}
+input[type=text]::placeholder{color:var(--ink-faint); text-transform:none; letter-spacing:0}
+input[type=text]:focus, .btn:focus-visible, .cell:focus-visible, .iconbtn:focus-visible, summary:focus-visible{
+  outline:2px solid var(--flame); outline-offset:2px;
+}
+.dkkeys{display:flex; gap:6px; margin:8px auto 0; max-width:36rem}
+.dkkeys button{
+  font-family:var(--font-mono); font-size:.85rem; padding:5px 11px; border:var(--rule);
+  background:var(--surface-2); color:var(--ink-soft); border-radius:2px; cursor:pointer;
+}
+.dkkeys button:hover{color:var(--ink)}
+.dkkeys .sp{flex:1}
+.feedback{font-size:.88rem; margin:8px auto 0; max-width:36rem; min-height:1.2em}
+.feedback.no{color:var(--bad)}
+.feedback.yes{color:var(--good)}
+.shake{animation:shake .35s}
+@keyframes shake{10%,90%{transform:translateX(-2px)}30%,70%{transform:translateX(4px)}50%{transform:translateX(-4px)}}
+
+details.hint{border:var(--rule); background:var(--surface-2); border-radius:2px; margin:0 0 8px}
+details.hint summary{
+  cursor:pointer; padding:10px 14px; font-family:var(--font-sc); font-size:.92rem;
+  letter-spacing:.06em; color:var(--verdigris); list-style:none;
+}
+details.hint summary::-webkit-details-marker{display:none}
+details.hint summary::after{content:" ▸"; color:var(--ink-faint)}
+details.hint[open] summary::after{content:" ▾"}
+details.hint .body{padding:0 14px 12px; font-size:.92rem; color:var(--ink-soft)}
+details.hint[open] summary{color:var(--flame)}
+
+.field{display:block; margin-bottom:12px}
+.field span{display:block; font-family:var(--font-sc); font-size:.85rem; letter-spacing:.07em; color:var(--verdigris); margin-bottom:4px}
+.field input{
+  width:100%; font-family:var(--font-body); font-size:.95rem; padding:10px;
+  border:var(--rule); border-radius:2px; background:var(--surface-2); color:var(--ink);
+  text-transform:none; letter-spacing:0;
+}
+.pill{
+  display:inline-block; font-family:var(--font-mono); font-size:.72rem; letter-spacing:.08em;
+  padding:3px 8px; border:1px solid var(--line-strong); border-radius:99px; color:var(--ink-soft);
+}
+.pill.flame{border-color:var(--flame); color:var(--flame)}
+.stepline{display:flex; align-items:baseline; gap:10px; margin-bottom:14px; flex-wrap:wrap}
+.year{font-family:var(--font-mono); font-size:.8rem; color:var(--flame); letter-spacing:.1em}
+.place{font-family:var(--font-sc); font-size:.95rem; letter-spacing:.06em; color:var(--ink-soft)}
+.walkicon{font-family:var(--font-display); font-size:2.6rem; color:var(--verdigris); line-height:1; margin-bottom:6px}
+.fact{display:grid; grid-template-columns:auto 1fr; gap:6px 10px; font-size:.88rem; align-items:start}
+.fact dt{font-family:var(--font-mono); font-size:.7rem; letter-spacing:.06em; padding-top:.28em; white-space:nowrap}
+.fact dt.t{color:var(--good)} .fact dt.f{color:var(--flame)}
+.fact dd{margin:0; color:var(--ink-soft)}
+.center{text-align:center}
+.code{
+  font-family:var(--font-mono); font-size:2rem; letter-spacing:.3em; color:var(--flame);
+  border:1px dashed var(--flame); padding:12px; text-align:center; margin-bottom:14px;
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <span class="mark">GRØNSUND · 1231–1872</span>
+    <span class="bar-sp"></span>
+    <span class="clock" id="clock">—</span>
+    <button class="iconbtn" id="menuBtn" title="Setup &amp; host guide" aria-label="Setup and host guide">☰</button>
+  </div>
+  <div class="splints" id="splints"></div>
+</header>
+
+<main class="wrap" id="app"></main>
+<div id="dock"></div>
+
+<script>
+"use strict";
+
+/* ── Persistence ─────────────────────────────────────────────────────── */
+var KEY = "gronsund-casket-v1";
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || null; }catch(e){ return null; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function wipe(){ try{ localStorage.removeItem(KEY); }catch(e){} }
+
+var DEFAULT_ROUTE = [
+  {name:"Grønsund Færgegård, Næs", q:"Grønsund Færgegård Falster"},
+  {name:"Gammel Færgebro ved Næs — the water's edge", q:"Gammel Færgebro Næs Falster"},
+  {name:"Gammel Færgevej — the site of Borrehuset", q:"Gammel Færgevej Næs Falster"},
+  {name:"Any high ground with a view along the coast", q:"Næs Falster"},
+  {name:"The dike / the shore facing Bogø", q:"Grønsund Falster kyst"}
+];
+
+var S = load() || {
+  screen:"title", idx:0, started:0, finished:0,
+  solved:[], hints:{}, route:JSON.parse(JSON.stringify(DEFAULT_ROUTE)),
+  walking:true, order:[], team:""
+};
+if(!S.route || S.route.length!==5){ S.route = JSON.parse(JSON.stringify(DEFAULT_ROUTE)); }
+
+/* ── Answer normalising ──────────────────────────────────────────────── */
+function norm(s){
+  return String(s||"").toLowerCase()
+    .replace(/[æä]/g,"a").replace(/[øö]/g,"o").replace(/å/g,"a")
+    .replace(/[^a-z0-9]/g,"")
+    .replace(/oe/g,"o").replace(/ae/g,"a").replace(/aa/g,"a");
+}
+
+/* ── The five stations ───────────────────────────────────────────────── */
+var STATIONS = [
+  {
+    year:"c. 1231", letter:"R", pos:3,
+    title:"The Toll Board",
+    place:"At the ferry landing",
+    intro:"The sound was called <em>Gronesund</em> — the green sound — as early as the 1180s, and by the 1230s the king's clerks were writing down what it earned him. Every beast and barrel that crossed here was worth a figure in skilling. Someone has scratched a note in the margin of the toll board.",
+    body:''
+      + '<div class="scroll"><p>“He who reads the board can read the fourth line, though the salt has eaten it. Find the sum, and the first splinter is yours.”</p></div>'
+      + '<div class="tablewrap"><table class="ledger">'
+      + '<tr><td>Three men on foot</td><td>3 sk.</td></tr>'
+      + '<tr><td>One ox and two men</td><td>8 sk.</td></tr>'
+      + '<tr><td>Two barrels and one ox</td><td>14 sk.</td></tr>'
+      + '<tr class="q"><td>Four oxen, two barrels, three men</td><td>? sk.</td></tr>'
+      + '</table></div>',
+    prompt:"How many skilling for the fourth line?",
+    numeric:true,
+    accept:["35","35sk","35skilling"],
+    near:{"31":"Close — check the price of a barrel again.","33":"You have the oxen right. Recount the barrels.","38":"Slightly high. One of your three prices is a skilling too dear."},
+    hints:[
+      "Start with the line that has only one kind of thing on it. Three men cost 3 skilling — so what does one man cost?",
+      "A man is 1 sk. From line two: one ox + two men = 8, so an ox is 6. From line three: two barrels + one ox = 14, so a barrel is 4.",
+      "4 oxen (24) + 2 barrels (8) + 3 men (3) = 35."
+    ],
+    solved:"An ox 6, a barrel 4, a man 1 — and the fourth line reads 35 skilling. A splinter of the casket lid comes away in your hand.",
+    hist:"Kong Valdemars Jordebog, the king's great cadastre compiled in the 1230s, recorded the crown's income from Sjælland, Lolland, Falster and Møn. Grønsund itself is named in writing from around 1186, as <em>Gronesund</em>."
+  },
+  {
+    year:"February 1658", letter:"N", pos:5,
+    title:"The Frozen Ship",
+    place:"At the water's edge, looking across the sound",
+    intro:"The winter the belts froze. Karl X Gustav took his army across the ice from Langeland to Lolland to Falster, marching for Zealand. A warship lay frozen fast in Grønsund, and an attack on Møn failed on rotten ice. A local pilot who knew which floes would hold left directions — no names, only steps.",
+    body:''
+      + '<div class="scroll"><p>“Fra det frosne skib: <b>tre</b> felter mod <b>nord</b>, <b>to</b> mod <b>øst</b>, <b>ét</b> mod <b>syd</b>, <b>tre</b> mod <b>vest</b>. Der ligger det.”</p></div>'
+      + '<p class="tiny">nord = north · syd = south · øst = east · vest = west · felt = square. North is up. Tap squares to trace your path.</p>'
+      + '<div class="chartbox" id="chartbox"></div>'
+      + '<div class="legend" id="legend"></div>'
+      + '<div class="btnrow" style="margin-top:12px"><button class="btn ghost sm" id="clearTrace">Clear the trace</button></div>',
+    prompt:"What stands on the square where the pilot's line ends?",
+    accept:["mollen","molle","mill","themill","windmill"],
+    near:{"bavnehojen":"That is where you turned south, not where you stopped. One more leg to go.","kirken":"You are one square out. Count the westward steps again.","b4":"Right square. Now name what stands on it.","galgebakken":"Wrong corner of the chart — you never went that far north."},
+    hints:[
+      "The frozen ship is at C2. Moving north raises the number; moving east moves you toward F.",
+      "C2 → three north → C5 → two east → E5 → one south → E4 → three west → B4.",
+      "You end on B4, and B4 is Møllen — the mill."
+    ],
+    solved:"B4. The mill on the rise, the one landmark you can see from the ice in any weather. The second splinter is in your hand.",
+    hist:"On 30 January 1658 Karl X Gustav crossed the frozen Little Belt with some 7,000 men and pushed on over Langeland, Lolland and Falster toward Zealand. Shifting frost and thaw left open water off Falster's north coast; the Swedish attempt on Møn failed, and a warship spent the winter iced in at Grønsund."
+  },
+  {
+    year:"19 May 1711", letter:"S", pos:1,
+    title:"The Shot at Borrehuset",
+    place:"At the old ferry house",
+    intro:"Marie Grubbe was born to one of Denmark's great families and married Ulrik Frederik Gyldenløve, the king's half-brother. She ended here, ferryman's wife at Grønsund, and told Ludvig Holberg she had never been happier. That May her husband Søren Sørensen Møller shot a skipper from Dragør at the drinking table. In the hour before the bailiff came, a casket left the house. Four people saw it go — and the parish clerk noted that <b>exactly one of them told the truth</b>.",
+    body:''
+      + '<ul class="clues">'
+      + '<li><b>Ane</b>, the maid: “It was not carried up to the loft.”</li>'
+      + '<li><b>Jens</b>, the dead man’s mate: “It was carried down to the cellar.”</li>'
+      + '<li><b>Peiter</b>, the tollman: “It was not carried down to the cellar.”</li>'
+      + '<li><b>Rasmus</b>, the fiddler: “It was carried into the kitchen.”</li>'
+      + '</ul>'
+      + '<p class="small" style="margin-top:14px">Kitchen · Loft · Cellar · Stable. Only one of the four spoke truly.</p>',
+    prompt:"Where was the casket carried?",
+    accept:["loftet","loft","theloft","attic","uploft"],
+    near:{"kalderen":"Try the cellar in English or Danish — but check your count first.","cellar":"If it went to the cellar, both Ane and Jens would be telling the truth. That is two, not one.","kokkenet":"Test that one: how many of the four would then be speaking truly?","kitchen":"Then Ane, Peiter and Rasmus are all truthful. Three is too many.","stalden":"Test it: Ane true, Peiter true. Two truths.","stable":"Ane and Peiter would both be right. That is two truths, not one."},
+    hints:[
+      "Don't argue about who is honest. Take each of the four rooms in turn and count how many statements come out true.",
+      "Kitchen gives three truths. Cellar gives two. Stable gives two.",
+      "The loft: Ane false, Jens false, Peiter true, Rasmus false — exactly one truth."
+    ],
+    solved:"The loft. Only the tollman told the truth, and only about what did <em>not</em> happen. The third splinter.",
+    hist:"Marie Grubbe (c. 1643–1718) lived at Borrehuset by the Grønsund ferry from 1706 with Søren Sørensen Møller, who held the ferry and inn rights. On 19 May 1711 he shot and killed a skipper from Dragør in a drunken fight and was sentenced to three years in irons at Bremerholm. That same year Ludvig Holberg, fleeing plague in Copenhagen, lodged here — and made her the subject of his Epistle 89, “on strange marriages.”"
+  },
+  {
+    year:"1813", letter:"I", pos:4,
+    title:"The Postmaster's Notice",
+    place:"On high ground, where a fire would be seen",
+    intro:"Denmark was at war with Britain, the coast was watched, and beacon fires answered one another from headland to headland. In 1813 the Postmaster General issued a fresh tariff for the Grønsund crossing. This copy came from the ferry house, and someone has written across the top of it in a different hand.",
+    body:''
+      + '<div class="scroll"><p>“Postmesteren skriver langt. <b>Læs hvert femte ord.</b>” — <span class="tiny">The postmaster writes at length. Read every fifth word.</span></p></div>'
+      + '<div class="notice card quiet">Given under our hand, the toll hereafter named for fire and lantern money hereby is set forth. No watch lit at Hesnæs, Bogø nor at Hårbølle counts unless the Bavnen answers it also.</div>',
+    prompt:"Where is the fire lit?",
+    accept:["bavnen","bavne","bavnehojen","thebeacon","beacon"],
+    near:{"hesnas":"A decoy — it is written plainly, but it is not the fifth word of anything.","bogo":"Written in the notice, yes, but not in the hidden line.","harbolle":"Written in the notice, yes, but not in the hidden line.","thefireislitat":"You have the sentence. Just the place, please."},
+    hints:[
+      "Count words, not lines, and start from the very first word: “Given” is one.",
+      "Words 5, 10, 15, 20, 25 and 30 make a sentence of six words.",
+      "the · fire · is · lit · at · Bavnen — the beacon."
+    ],
+    solved:"“The fire is lit at Bavnen.” Three place names in plain sight, and the true one buried every fifth word. The fourth splinter.",
+    hist:"In 1813 the Postmaster General issued a detailed rate sheet for the Grønsund ferry between the ferry farms on either side of the sound. A <em>bavn</em> was a beacon fire kept ready on a hill; the word survives in place names all along these coasts."
+  },
+  {
+    year:"13 November 1872", letter:"K", pos:2,
+    title:"The High-Water Mark",
+    place:"At the dike, or the shore",
+    intro:"The worst storm surge the Baltic has recorded in modern times. Hurricane wind drove the water three metres and more above normal across Lolland-Falster and Møn in a single night. The parish clerk wrote five lines about it. They are bad verse, and they are not really about the flood.",
+    body:''
+      + '<div class="verse card quiet">'
+      + '<span>Dark came the water where the moon should stand,</span>'
+      + '<span>In through the byre, the parlour and the loft,</span>'
+      + '<span>Grønsund lay open from shore to shore,</span>'
+      + '<span>Ere morning, names were called and not answered,</span>'
+      + '<span>Ten score of hulls lay broken on the sand.</span>'
+      + '</div>'
+      + '<div class="scroll"><p>“What the water taught us, we built. Read down, not across.”</p></div>',
+    prompt:"What did the water teach them to build?",
+    accept:["diget","dige","digerne","thedike","dike","dyke","thedyke","seawall"],
+    near:{"vand":"Read down the left edge, letter by letter, from the top.","storm":"Read the first letter of each line, from the top down."},
+    hints:[
+      "Ignore the meaning. Look only at the first letter of each of the five lines.",
+      "D · I · G · E · T",
+      "DIGET — the dike. Danish for the sea wall."
+    ],
+    solved:"DIGET. After 1872 they built the dikes along Falster's east coast, and they are still what stands between this shore and that night. The last splinter.",
+    hist:"On the night of 13 November 1872 a hurricane of around 32 m/s pushed Baltic water 3.0–3.5 m above normal onto these coasts. Close to 100 people drowned on land, some 200 ships were wrecked and at least 250 sailors died. Falster's east-coast dike and Lolland's 63 km south-coast dike were built in answer."
+  }
+];
+
+var FEATURES = {
+  "A1":"Færgebroen", "F1":"Rørhaven", "C2":"Det frosne skib", "E2":"Sandrevlen",
+  "B4":"Møllen", "D4":"Kirken", "E5":"Bavnehøjen", "B6":"Galgebakken", "F6":"Råken"
+};
+var FEATURE_EN = {
+  "Færgebroen":"the ferry bridge", "Rørhaven":"the reed beds", "Det frosne skib":"the frozen ship",
+  "Sandrevlen":"the sandbar", "Møllen":"the mill", "Kirken":"the church",
+  "Bavnehøjen":"the beacon hill", "Galgebakken":"the gallows hill", "Råken":"the lead in the ice"
+};
+
+/* ── Helpers ─────────────────────────────────────────────────────────── */
+function el(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function mapLink(i){
+  var r = S.route[i] || {};
+  var q = r.q || r.name || "Grønsund Falster";
+  return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+}
+function elapsed(){
+  if(!S.started) return 0;
+  return Math.floor(((S.finished || Date.now()) - S.started)/1000);
+}
+function mmss(t){
+  var m = Math.floor(t/60), s = t%60;
+  return (m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+}
+function tickClock(){
+  var c = el("clock");
+  if(!S.started){ c.textContent = "—"; c.className="clock"; return; }
+  var t = elapsed();
+  c.textContent = mmss(t);
+  c.className = "clock" + (t > 45*60 ? " over" : "");
+}
+setInterval(tickClock, 1000);
+
+function drawSplints(){
+  var box = el("splints");
+  if(S.screen==="title" || S.screen==="host"){ box.innerHTML=""; return; }
+  var html = "";
+  for(var i=0;i<5;i++){
+    var o = S.order[i];
+    if(o){ html += '<span class="splint has">'+o.letter+'<sub>'+o.pos+'</sub></span>'; }
+    else { html += '<span class="splint" aria-hidden="true">·</span>'; }
+  }
+  box.innerHTML = html;
+}
+
+/* ── Screens ─────────────────────────────────────────────────────────── */
+function render(){
+  drawSplints(); tickClock();
+  var a = el("app"), d = el("dock");
+  d.innerHTML = "";
+  window.scrollTo(0,0);
+  if(S.screen==="title") screenTitle(a);
+  else if(S.screen==="brief") screenBrief(a);
+  else if(S.screen==="walk") screenWalk(a);
+  else if(S.screen==="station") screenStation(a,d);
+  else if(S.screen==="assemble") screenAssemble(a,d);
+  else if(S.screen==="finale") screenFinale(a);
+  else if(S.screen==="host") screenHost(a);
+  save();
+}
+
+function screenTitle(a){
+  a.innerHTML =
+    '<div style="padding-top:30px">'
+    + '<p class="eyebrow">An outdoor escape room · Grønsund, Falster</p>'
+    + '<h1>The Grønsund Casket</h1>'
+    + '<p class="lede">Five stops along the sound. Five centuries. One word that opens a box that has been shut since 1711.</p>'
+    + '<hr class="chart">'
+    + '<p>Between Falster and the islands of Bogø and Møn runs a narrow green water the old documents call <em>Gronesund</em>. Kings taxed it. A Swedish army walked across it. A disgraced noblewoman rowed the ferry over it and told Denmark’s greatest playwright she had never been happier in her life. In one night in 1872 the sea came back over the top of it.</p>'
+    + '<p>Every fact in this game is real. The casket is not — but everything hiding it is.</p>'
+    + '<div class="card quiet"><div class="fact">'
+      + '<dt class="t">TIME</dt><dd>30–45 minutes</dd>'
+      + '<dt class="t">PLAYERS</dt><dd>2–6, one phone between you</dd>'
+      + '<dt class="t">WALK</dt><dd>Five short stops, or play it all from one bench</dd>'
+      + '<dt class="t">NEEDED</dt><dd>Nothing. No pens, no printing, no signal after loading.</dd>'
+    + '</div></div>'
+    + '<button class="btn flame" id="go">Begin</button>'
+    + '<div class="btnrow" style="margin-top:8px">'
+      + '<button class="btn ghost" id="hostBtn">Set up the route</button>'
+      + (S.solved.length ? '<button class="btn ghost" id="resume">Resume ('+S.solved.length+'/5)</button>' : '')
+    + '</div>'
+    + '</div>';
+  el("go").onclick = function(){
+    if(!S.started){ S.started = Date.now(); }
+    S.screen="brief"; render();
+  };
+  el("hostBtn").onclick = function(){ S.screen="host"; render(); };
+  if(el("resume")) el("resume").onclick = function(){ S.screen = S.solved.length>=5 ? "assemble" : "walk"; render(); };
+}
+
+function screenBrief(a){
+  a.innerHTML =
+    '<p class="eyebrow">The brief</p>'
+    + '<h2>What Holberg left behind</h2>'
+    + '<p>In the summer of 1711 Ludvig Holberg fled the plague in Copenhagen and took lodging at the ferry house at Grønsund. The woman who served him was Marie Grubbe — once married to the king’s own half-brother, now the ferryman’s wife, and by her own account content. He wrote about her later. He did not write about the casket.</p>'
+    + '<div class="scroll"><p>“She would not say what was in it, only that it must not be found by anyone who came asking in the king’s name. She had cut the word across five splinters of the lid and given them to the sound. Whoever gathers the five may have what is inside.”</p></div>'
+    + '<p>You have five stops. At each one a piece of Grønsund’s history has kept a splinter, and each splinter carries <b>one letter and its place in the word</b>. Collect all five, put them in order, and you have it.</p>'
+    + '<div class="card quiet"><h3>House rules</h3>'
+      + '<ul class="plain small">'
+      + '<li>Everything you need is on this screen. Nothing is buried, taped or hidden in the real world.</li>'
+      + '<li>Hints are free and come in three steps. The third gives you the answer. Use them — the clock matters more than your pride.</li>'
+      + '<li>Look up between puzzles. The places are the point.</li>'
+      + '</ul></div>'
+    + '<button class="btn flame" id="next">Set off</button>';
+  el("next").onclick = function(){ S.screen="walk"; render(); };
+}
+
+function screenWalk(a){
+  var i = S.idx, st = STATIONS[i], r = S.route[i] || {};
+  var mode = S.walking;
+  a.innerHTML =
+    '<p class="eyebrow">Stop '+(i+1)+' of 5</p>'
+    + '<div class="walkicon">' + ["✦","❋","✧","❈","✤"][i] + '</div>'
+    + '<h2>'+esc(st.title)+'</h2>'
+    + '<div class="stepline"><span class="year">'+st.year+'</span><span class="place">'+esc(mode ? (r.name||st.place) : st.place)+'</span></div>'
+    + (mode
+        ? '<p class="small">Walk there, stand where you can see the water if you can, then open the puzzle. If the spot is fenced, flooded or simply not there any more — this is a coast that moves — stand as near as you like.</p>'
+          + '<div class="btnrow" style="margin-bottom:10px"><a class="btn ghost sm" style="flex:1;text-align:center;text-decoration:none;line-height:1.4" href="'+mapLink(i)+'" target="_blank" rel="noopener">Open in maps</a></div>'
+        : '<p class="small">Playing from one spot. Read it aloud — it works better out loud.</p>')
+    + '<button class="btn flame" id="next">We’re here — open it</button>';
+  el("next").onclick = function(){ S.screen="station"; render(); };
+}
+
+function buildChart(){
+  var box = el("chartbox"); if(!box) return;
+  var cols = ["A","B","C","D","E","F"], html = '<div class="icegrid">';
+  var nums = {}, n = 0, k;
+  for(k in FEATURES){ if(k!=="C2"){ n++; nums[k]=n; } }
+  for(var r=6;r>=1;r--){
+    html += '<span class="rl">'+r+'</span>';
+    for(var c=0;c<6;c++){
+      var id = cols[c]+r, cls = "cell", lbl = "";
+      if(id==="C2"){ cls+=" start"; lbl="★"; }
+      else if(FEATURES[id]){ cls+=" feat"; lbl=nums[id]; }
+      html += '<button class="'+cls+'" data-id="'+id+'" title="'+id+'"><span>'+lbl+'</span><span class="dot"></span></button>';
+    }
+  }
+  html += '<span></span>';
+  for(var c2=0;c2<6;c2++){ html += '<span class="cl">'+cols[c2]+'</span>'; }
+  html += '</div>';
+  box.innerHTML = html;
+
+  var lg = el("legend"), lh = '<div><b>★</b>Det frosne skib <span class="tiny">(the frozen ship)</span></div>';
+  for(k in FEATURES){
+    if(k==="C2") continue;
+    lh += '<div><b>'+nums[k]+'</b>'+FEATURES[k]+' <span class="tiny">('+FEATURE_EN[FEATURES[k]]+')</span></div>';
+  }
+  lg.innerHTML = lh;
+
+  Array.prototype.forEach.call(box.querySelectorAll(".cell"), function(b){
+    b.onclick = function(){ b.classList.toggle("on"); };
+  });
+  if(el("clearTrace")) el("clearTrace").onclick = function(){
+    Array.prototype.forEach.call(box.querySelectorAll(".cell.on"), function(b){ b.classList.remove("on"); });
+  };
+}
+
+function screenStation(a, d){
+  var i = S.idx, st = STATIONS[i];
+  var used = S.hints[i] || 0;
+  var hintHtml = "";
+  for(var h=0; h<st.hints.length; h++){
+    hintHtml += '<details class="hint"'+(h<used?" open":"")+' data-h="'+h+'">'
+      + '<summary>'+(h===2 ? "Give me the answer" : "Hint "+(h+1))+'</summary>'
+      + '<div class="body">'+st.hints[h]+'</div></details>';
+  }
+  a.innerHTML =
+    '<p class="eyebrow">Stop '+(i+1)+' of 5 · '+st.year+'</p>'
+    + '<h2>'+esc(st.title)+'</h2>'
+    + '<p>'+st.intro+'</p>'
+    + st.body
+    + '<hr class="chart">'
+    + '<h3>'+esc(st.prompt)+'</h3>'
+    + hintHtml
+    + '<div class="hist"><p><b>What is true:</b> '+st.hist+'</p></div>';
+
+  if(i===1) buildChart();
+
+  d.innerHTML =
+    '<div class="answerbar">'
+    + '<div class="in">'
+      + '<input type="text" id="ans" autocomplete="off" autocapitalize="characters" spellcheck="false"'
+      + (st.numeric ? ' inputmode="numeric"' : '') + ' placeholder="Your answer" aria-label="Your answer">'
+      + '<button class="btn" style="width:auto" id="sub">Check</button>'
+    + '</div>'
+    + (st.numeric ? '' :
+       '<div class="dkkeys"><button data-c="Æ">Æ</button><button data-c="Ø">Ø</button><button data-c="Å">Å</button>'
+       + '<span class="sp"></span><button data-c="__back">⌫</button></div>')
+    + '<div class="feedback" id="fb" role="status" aria-live="polite"></div>'
+    + '</div>';
+
+  var input = el("ans"), fb = el("fb");
+  Array.prototype.forEach.call(d.querySelectorAll(".dkkeys button"), function(b){
+    b.onclick = function(){
+      var c = b.getAttribute("data-c");
+      input.value = (c === "__back") ? input.value.slice(0,-1) : input.value + c;
+      input.focus();
+    };
+  });
+  Array.prototype.forEach.call(a.querySelectorAll("details.hint"), function(dt){
+    dt.addEventListener("toggle", function(){
+      if(dt.open){
+        var hn = parseInt(dt.getAttribute("data-h"),10)+1;
+        if((S.hints[i]||0) < hn){ S.hints[i]=hn; save(); }
+      }
+    });
+  });
+
+  function submit(){
+    var v = norm(input.value);
+    if(!v){ return; }
+    if(st.accept.indexOf(v) > -1){ solve(); return; }
+    var msg = st.near[v] || null;
+    fb.className = "feedback no";
+    fb.textContent = msg || "Not that. Try again, or open a hint.";
+    input.classList.remove("shake"); void input.offsetWidth; input.classList.add("shake");
+  }
+  el("sub").onclick = submit;
+  input.addEventListener("keydown", function(e){ if(e.key==="Enter") submit(); });
+}
+
+function solve(){
+  var i = S.idx, st = STATIONS[i];
+  if(S.solved.indexOf(i) === -1){
+    S.solved.push(i);
+    S.order.push({letter:st.letter, pos:st.pos});
+  }
+  var a = el("app"), d = el("dock");
+  d.innerHTML = "";
+  drawSplints();
+  a.innerHTML =
+    '<p class="eyebrow">Stop '+(i+1)+' · solved</p>'
+    + '<h2>'+esc(st.title)+'</h2>'
+    + '<div class="card"><p style="margin:0">'+st.solved+'</p></div>'
+    + '<div class="center card quiet">'
+      + '<p class="eyebrow" style="margin-bottom:10px">Splinter '+S.solved.length+' of 5</p>'
+      + '<div style="font-family:var(--font-display);font-size:4rem;line-height:1;color:var(--flame)">'+st.letter+'</div>'
+      + '<p class="tiny" style="margin:6px 0 0">letter number <b style="font-family:var(--font-mono);color:var(--flame)">'+st.pos+'</b> of the word</p>'
+    + '</div>'
+    + '<div class="hist"><p><b>What is true:</b> '+st.hist+'</p></div>'
+    + '<button class="btn flame" id="next" style="margin-top:16px">'
+      + (S.solved.length>=5 ? "All five gathered" : "On to stop "+(i+2))
+    + '</button>';
+  el("next").onclick = function(){
+    if(S.solved.length>=5){ S.screen="assemble"; }
+    else { S.idx = i+1; S.screen="walk"; }
+    render();
+  };
+  save();
+  window.scrollTo(0,0);
+}
+
+function screenAssemble(a, d){
+  var chips = S.order.map(function(o){
+    return '<span class="splint has" style="width:44px;height:48px;font-size:26px">'+o.letter+'<sub>'+o.pos+'</sub></span>';
+  }).join("");
+  a.innerHTML =
+    '<p class="eyebrow">The last turn</p>'
+    + '<h2>Five splinters</h2>'
+    + '<p>You gathered them out of order, because the sound gave them up out of order. Each one carries its place in the word. Put them where they belong.</p>'
+    + '<div style="display:flex;gap:8px;justify-content:center;margin:22px 0;flex-wrap:wrap">'+chips+'</div>'
+    + '<div class="scroll"><p>“It is one word, five letters, and it is Danish. Say it out loud at the water and the lid will come up.”</p></div>'
+    + '<details class="hint"><summary>Hint</summary><div class="body">Order the letters by the little number: 1, 2, 3, 4, 5. The word means a small chest or casket.</div></details>';
+  d.innerHTML =
+    '<div class="answerbar"><div class="in">'
+    + '<input type="text" id="ans" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="The word" aria-label="The word">'
+    + '<button class="btn flame" style="width:auto" id="sub">Open it</button>'
+    + '</div><div class="feedback" id="fb" role="status" aria-live="polite"></div></div>';
+  var input = el("ans"), fb = el("fb");
+  function submit(){
+    var v = norm(input.value);
+    if(v === "skrin" || v === "skrinet" || v === "etskrin"){
+      S.finished = Date.now(); S.screen="finale"; render(); return;
+    }
+    fb.className="feedback no";
+    fb.textContent = (v.length===5 ? "Five letters, but not the right five. Check the numbers." : "Five letters. Sort them by their number.");
+    input.classList.remove("shake"); void input.offsetWidth; input.classList.add("shake");
+  }
+  el("sub").onclick = submit;
+  input.addEventListener("keydown", function(e){ if(e.key==="Enter") submit(); });
+}
+
+function screenFinale(a){
+  var t = elapsed();
+  var hintTotal = 0; for(var k in S.hints){ hintTotal += S.hints[k]; }
+  a.innerHTML =
+    '<p class="eyebrow">Opened</p>'
+    + '<h1 style="font-size:clamp(2.6rem,14vw,4rem);color:var(--flame)">SKRIN</h1>'
+    + '<p class="lede">Danish for a small chest. The lid comes up.</p>'
+    + '<hr class="chart">'
+    + '<p>There is no gold in it. There never was.</p>'
+    + '<p>There is a bundle of letters in a hand that had been taught to write like a nobleman’s daughter, because it was one. There is a paper granting the right to row people across Grønsund and to keep an inn on the Falster shore — the only property she had left, and the only one she wanted. And there is a single line, written the summer the playwright came and asked her, with the plain rudeness of a young man, how she could possibly bear it.</p>'
+    + '<div class="scroll"><p>“Jeg har det bedre nu.”<br><span class="tiny" style="font-family:var(--font-body)">I am better off now.</span></p></div>'
+    + '<p>She died at Grønsund in 1718. Holberg published his account of her in Epistle 89, on strange marriages, and never quite got over it; J. P. Jacobsen built a whole novel on her in 1876, and Danish writers have been picking at her ever since. The ferry ran here for the better part of two hundred years afterwards. The water is still green.</p>'
+    + '<div class="card"><h3>Your crossing</h3><div class="fact">'
+      + '<dt class="t">TIME</dt><dd style="font-family:var(--font-mono)">'+mmss(t)+'</dd>'
+      + '<dt class="t">HINTS</dt><dd style="font-family:var(--font-mono)">'+hintTotal+'</dd>'
+      + '<dt class="t">VERDICT</dt><dd>'+(t<=25*60?"Faster than the ferry.":(t<=45*60?"Bang on the tide. Well crossed.":"You took the scenic route. Correct decision."))+'</dd>'
+    + '</div></div>'
+    + '<div class="card quiet"><h3>If there is a real box</h3>'
+      + '<p class="small" style="margin:0 0 10px">Your host may have left one, locked. The code is the year Holberg knocked on the door:</p>'
+      + '<div class="code">1711</div></div>'
+    + '<hr class="chart">'
+    + '<h3>True, and not true</h3>'
+    + '<div class="card quiet"><div class="fact">'
+      + '<dt class="t">TRUE</dt><dd>Grønsund is named in writing from about 1186 as <em>Gronesund</em>, the green sound.</dd>'
+      + '<dt class="t">TRUE</dt><dd>Kong Valdemars Jordebog, from the 1230s, recorded crown income across Falster and Møn.</dd>'
+      + '<dt class="t">TRUE</dt><dd>Karl X Gustav crossed the frozen Little Belt on 30 January 1658 and marched over Langeland, Lolland and Falster; a warship froze fast in Grønsund and the assault on Møn failed.</dd>'
+      + '<dt class="t">TRUE</dt><dd>Marie Grubbe, formerly married to Ulrik Frederik Gyldenløve, lived at Borrehuset by the Grønsund ferry from 1706. Her husband Søren Sørensen Møller shot a Dragør skipper on 19 May 1711 and got three years in irons at Bremerholm. Holberg lodged there that year and wrote Epistle 89.</dd>'
+      + '<dt class="t">TRUE</dt><dd>Grønsund Færgegård, about 5 km east of Stubbekøbing, has a main building from 1731 and a travellers’ stable from 1750; both were listed in 1950. A ferry ran here for nearly two hundred years.</dd>'
+      + '<dt class="t">TRUE</dt><dd>In 1813 the Postmaster General issued a detailed tariff for the Grønsund crossing.</dd>'
+      + '<dt class="t">TRUE</dt><dd>The storm surge of 13 November 1872 raised the water 3.0–3.5 m, drowned close to 100 people ashore and wrecked around 200 ships. The east-coast dike on Falster was built afterwards.</dd>'
+      + '<dt class="f">INVENTED</dt><dd>The casket and everything in it — including the line she is given at the end of this game. Also the five splinters, the toll board’s fourth line, the pilot’s ice chart, the four witnesses, the postmaster’s hidden sentence and the parish clerk’s verse. All of it is ours, none of it is theirs.</dd>'
+    + '</div></div>'
+    + '<div class="btnrow" style="margin-top:16px">'
+      + '<button class="btn ghost" id="again">Play again</button>'
+      + '<button class="btn ghost" id="hostBtn">Set it up for someone else</button>'
+    + '</div>';
+  el("again").onclick = function(){ reset(); };
+  el("hostBtn").onclick = function(){ S.screen="host"; render(); };
+}
+
+function reset(){
+  var route = S.route, walking = S.walking;
+  wipe();
+  S = {screen:"title", idx:0, started:0, finished:0, solved:[], hints:{}, route:route, walking:walking, order:[], team:""};
+  render();
+}
+
+function screenHost(a){
+  var rows = "";
+  for(var i=0;i<5;i++){
+    rows += '<label class="field"><span>Stop '+(i+1)+' · '+STATIONS[i].year+' · '+esc(STATIONS[i].title)+'</span>'
+      + '<input type="text" data-r="'+i+'" value="'+esc(S.route[i].name)+'"></label>';
+  }
+  a.innerHTML =
+    '<p class="eyebrow">Host &amp; setup</p>'
+    + '<h2>Running it at Grønsund</h2>'
+    + '<p class="small">Nothing here is needed to play. It is for whoever is organising.</p>'
+    + '<div class="card"><h3>The route</h3>'
+      + '<p class="small">The suggested stops sit within a short walk of each other on the Falster shore, around Næs east of Stubbekøbing. Rename them to whatever suits your group — a garden, a harbour, a hotel corridor. The puzzles do not depend on anything you find there.</p>'
+      + rows
+      + '<div class="btnrow"><button class="btn ghost sm" id="resetRoute">Restore suggested stops</button></div>'
+    + '</div>'
+    + '<div class="card"><h3>Walking or sitting</h3>'
+      + '<label style="display:flex;gap:10px;align-items:flex-start;font-size:.92rem">'
+      + '<input type="checkbox" id="walkTog" '+(S.walking?"checked":"")+' style="margin-top:4px">'
+      + '<span>Walking mode — show the location and a maps link before each puzzle. Turn it off to play the whole thing from one spot, indoors or out.</span></label>'
+    + '</div>'
+    + '<div class="card"><h3>Timing</h3>'
+      + '<p class="small" style="margin:0">Five puzzles at four to six minutes each, plus a few minutes’ walk between stops, lands at 35–45 minutes. Groups that take all three hints on everything still finish inside 30. The clock counts up; nothing expires.</p></div>'
+    + '<div class="card"><h3>Optional: a real box</h3>'
+      + '<p class="small" style="margin:0">If you want something physical at the end, leave a small box with a four-digit combination padlock at the final stop and set it to <b style="font-family:var(--font-mono);color:var(--flame)">1711</b>. Chocolate, a hip flask, a photograph. The app gives players the code when they win.</p></div>'
+    + '<div class="card"><h3>Good to know</h3>'
+      + '<ul class="plain small" style="margin-bottom:0">'
+      + '<li>Load the page once with signal. After that it runs offline and remembers where you are, even if the phone locks.</li>'
+      + '<li>One phone per group of 2–6 works better than one each. Read the story parts aloud.</li>'
+      + '<li>Step-free throughout if you pick your stops that way; nothing requires bending, digging or climbing.</li>'
+      + '<li>The 1711 station involves a killing and the 1872 one a drowning. Both are historical fact, told plainly. Fine for around age 10 up.</li>'
+      + '</ul></div>'
+    + '<details class="hint"><summary>Answer key — spoilers</summary><div class="body">'
+      + '<b>1231</b> 35 · <b>1658</b> Møllen (B4) · <b>1711</b> Loftet · <b>1813</b> Bavnen · <b>1872</b> Diget<br>'
+      + 'Letters, in order of position: S·K·R·I·N. Final word <b>SKRIN</b>. Padlock 1711.'
+    + '</div></details>'
+    + '<div class="btnrow" style="margin-top:16px">'
+      + '<button class="btn flame" id="back">Back to the game</button>'
+      + '<button class="btn ghost" id="wipe">Erase progress</button>'
+    + '</div>';
+  Array.prototype.forEach.call(a.querySelectorAll("input[data-r]"), function(inp){
+    inp.oninput = function(){
+      var n = parseInt(inp.getAttribute("data-r"),10);
+      S.route[n].name = inp.value; S.route[n].q = inp.value; save();
+    };
+  });
+  el("walkTog").onchange = function(){ S.walking = el("walkTog").checked; save(); };
+  el("resetRoute").onclick = function(){ S.route = JSON.parse(JSON.stringify(DEFAULT_ROUTE)); save(); render(); };
+  el("back").onclick = function(){
+    S.screen = S.started ? (S.solved.length>=5 ? "assemble" : "walk") : "title"; render();
+  };
+  el("wipe").onclick = function(){ if(confirm("Erase progress and start over?")) reset(); };
+}
+
+el("menuBtn").onclick = function(){
+  if(S.screen==="host"){ S.screen = S.started ? (S.solved.length>=5?"assemble":"walk") : "title"; }
+  else { S.screen="host"; }
+  render();
+};
+
+render();
+</script>
+
+</body>
+</html>

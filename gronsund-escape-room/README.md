@@ -8,6 +8,8 @@ Open `index.html` in a phone browser. It is a single file with no build step, no
 dependencies and no back end. Load it once with signal and it runs offline;
 progress is kept in `localStorage`, so a locked phone does not lose the game.
 
+**Turn the volume up.** A narrator tells the story at every stop.
+
 ## The game
 
 Players follow a fictional casket that Marie Grubbe is said to have hidden at the
@@ -30,6 +32,32 @@ Answers are matched case-insensitively with Danish characters folded (`ø→o`,
 `moellen` are accepted. Each puzzle has three hint levels; the third gives the
 answer away.
 
+## The narrator
+
+Every screen is narrated aloud — the opening, each stop, each solve, the ending.
+The voice is the device's own speech synthesis (Web Speech API), so it needs no
+network, no audio files and no permission prompt.
+
+- **Danish is spelled phonetically for the voice.** The caption reads `Grønsund`,
+  the narrator is handed `Gruhn-soon`; likewise `Møllen`/`Muh-len`,
+  `Bavnen`/`Bow-nen`, `Diget`/`Dee-yet`, `Skrin`/`Skreen`, and
+  `Jeg har det bedre nu`/`Yai har deh beh-dreh noo`. Years are spelled out
+  (`seventeen eleven`) so the voice does not read them as cardinal numbers.
+- **Live captions.** The line being spoken shows in a strip under the header, so
+  the game still works in wind, on a bad speaker, or for anyone who would rather
+  read it. The strip holds a fixed height so the page does not jump.
+- **Controls.** The speaker in the top corner silences and restores the narrator;
+  `stop` cuts the current line, `replay` runs the screen again. Voice, pace and
+  sound effects are in ☰ → The narrator. Speech stops when the phone is pocketed
+  or the player switches app.
+- **Pacing is authored per line** — rate, pitch and the length of the silence after
+  it — so the delivery can land a pause where the story needs one.
+- **Sound effects** are synthesised with the Web Audio API: oak splitting when a
+  splinter comes away, a dull knock on a wrong answer, a hinge and three rising
+  tones when the casket opens.
+- Browsers without speech synthesis get the game silently, with a note in the
+  setup screen; nothing else changes.
+
 ## Running it
 
 The suggested route sits on the Falster shore around Næs, east of Stubbekøbing —
@@ -37,6 +65,10 @@ Grønsund Færgegård, the old ferry bridge, the site of Borrehuset, high ground
 the dike. Stop names are editable in the app (☰ → Set up the route), and the
 puzzles do not depend on finding anything in the real world, so the game also works
 from a single bench, a garden or indoors. Turn off walking mode for that.
+
+**Open in maps** tries `window.open`. Sandboxed embeds (and some in-app browsers)
+block that silently, so the button detects the block and falls back to showing the
+place name as selectable text with a copy button, rather than doing nothing.
 
 ## History
 

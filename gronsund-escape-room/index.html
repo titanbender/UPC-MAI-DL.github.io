@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="A 30-45 minute outdoor escape room for Gronsund on Falster, Denmark. Five stops, five centuries, one word. Runs on a phone.">
+<meta name="description" content="A narrated 30-45 minute outdoor escape room for Gronsund on Falster, Denmark. Five stops, five centuries, one word. Runs on a phone.">
 <meta name="theme-color" content="#E3E7E3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#071417" media="(prefers-color-scheme: dark)">
 <style>
@@ -261,6 +261,33 @@ details.hint[open] summary{color:var(--flame)}
   font-family:var(--font-mono); font-size:2rem; letter-spacing:.3em; color:var(--flame);
   border:1px dashed var(--flame); padding:12px; text-align:center; margin-bottom:14px;
 }
+/* narrator strip */
+.narr{max-width:36rem; margin:0 auto; padding:0 18px 9px; display:flex; gap:9px; align-items:flex-start}
+.narr p{
+  margin:0; flex:1; font-family:var(--font-display); font-size:.95rem; line-height:1.35;
+  color:var(--ink); min-height:2.7em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.narr p.idle{font-family:var(--font-sc); font-size:.8rem; letter-spacing:.09em; color:var(--ink-faint); min-height:0}
+.narr .eq{display:flex; gap:2px; align-items:flex-end; height:13px; flex:none; padding-top:3px}
+.narr .eq i{width:2px; height:12px; background:var(--flame); transform-origin:bottom; animation:eq .85s ease-in-out infinite}
+.narr .eq i:nth-child(2){animation-delay:.16s} .narr .eq i:nth-child(3){animation-delay:.33s} .narr .eq i:nth-child(4){animation-delay:.08s}
+.narr .eq.idle i{animation:none; background:var(--ink-faint); opacity:.5; height:5px}
+@keyframes eq{0%,100%{transform:scaleY(.22)}50%{transform:scaleY(1)}}
+.narrbtn{
+  flex:none; align-self:flex-start; font-family:var(--font-mono); font-size:.66rem; letter-spacing:.08em;
+  padding:3px 7px; border:1px solid var(--line-strong); background:transparent; color:var(--ink-faint);
+  border-radius:2px; cursor:pointer;
+}
+.narrbtn:hover{color:var(--ink); border-color:var(--ink-faint)}
+.iconbtn.off{color:var(--ink-faint); opacity:.6}
+.iconbtn.on{color:var(--flame); border-color:var(--flame)}
+/* maps fallback */
+.mapfall{margin:0 0 10px; padding:12px 14px; border:1px dashed var(--line-strong); background:var(--surface-2); border-radius:2px}
+.mapfall .q{font-family:var(--font-mono); font-size:.9rem; color:var(--brand); word-break:break-word; -webkit-user-select:all; user-select:all; display:block; margin:6px 0 10px}
+select.set{
+  width:100%; font-family:var(--font-body); font-size:.92rem; padding:9px 10px; border:var(--rule);
+  border-radius:2px; background:var(--surface-2); color:var(--ink);
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
 </style>
 
@@ -271,9 +298,11 @@ details.hint[open] summary{color:var(--flame)}
     <span class="mark">GRØNSUND · 1231–1872</span>
     <span class="bar-sp"></span>
     <span class="clock" id="clock">—</span>
+    <button class="iconbtn" id="sndBtn" title="Narrator" aria-label="Turn the narrator on or off">🔊</button>
     <button class="iconbtn" id="menuBtn" title="Setup &amp; host guide" aria-label="Setup and host guide">☰</button>
   </div>
   <div class="splints" id="splints"></div>
+  <div class="narr" id="narr" hidden></div>
 </header>
 
 <main class="wrap" id="app"></main>
@@ -289,11 +318,11 @@ function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} 
 function wipe(){ try{ localStorage.removeItem(KEY); }catch(e){} }
 
 var DEFAULT_ROUTE = [
-  {name:"Grønsund Færgegård, Næs", q:"Grønsund Færgegård Falster"},
-  {name:"Gammel Færgebro ved Næs — the water's edge", q:"Gammel Færgebro Næs Falster"},
-  {name:"Gammel Færgevej — the site of Borrehuset", q:"Gammel Færgevej Næs Falster"},
-  {name:"Any high ground with a view along the coast", q:"Næs Falster"},
-  {name:"The dike / the shore facing Bogø", q:"Grønsund Falster kyst"}
+  {name:"Grønsund Færgegård, Næs", q:"Grønsund Færgegård, Falster, Denmark"},
+  {name:"The old ferry bridge — the water's edge", q:"Gammel Færgevej, Stubbekøbing, Denmark"},
+  {name:"Gammel Færgevej — the site of Borrehuset", q:"Gammel Færgevej, Stubbekøbing, Denmark"},
+  {name:"High ground with a view along the coast", q:"Stubbekøbing Havn, Denmark"},
+  {name:"The dike, or the shore facing Bogø", q:"Grønsund, Falster, Denmark"}
 ];
 
 var S = load() || {
@@ -477,12 +506,282 @@ function drawSplints(){
   box.innerHTML = html;
 }
 
+
+/* ── The Narrator ────────────────────────────────────────────────────────
+   Web Speech API. No network, no assets. Each line has a caption (t) and,
+   where Danish would defeat an English voice, a phonetic spoken form (s).
+   r = rate multiplier, p = pitch, g = silence after, in ms.              */
+
+var SPEAKABLE = (typeof window !== "undefined") && ("speechSynthesis" in window) && ("SpeechSynthesisUtterance" in window);
+var V = { on:true, fx:true, rate:0.95, uri:null, gen:0, live:false, last:null };
+try{ var vs_ = JSON.parse(localStorage.getItem(KEY+"-voice")); if(vs_){ V.on=!!vs_.on; V.fx=vs_.fx!==false; V.rate=vs_.rate||0.95; V.uri=vs_.uri||null; } }catch(e){}
+function saveVoice(){ try{ localStorage.setItem(KEY+"-voice", JSON.stringify({on:V.on,fx:V.fx,rate:V.rate,uri:V.uri})); }catch(e){} }
+
+function voices(){ try{ return window.speechSynthesis.getVoices() || []; }catch(e){ return []; } }
+function pickVoice(){
+  var vs = voices(); if(!vs.length) return null;
+  var i;
+  if(V.uri){ for(i=0;i<vs.length;i++){ if(vs[i].voiceURI===V.uri) return vs[i]; } }
+  for(i=0;i<vs.length;i++){ if(/^en[-_]GB/i.test(vs[i].lang) && !/google/i.test(vs[i].name)) return vs[i]; }
+  for(i=0;i<vs.length;i++){ if(/^en[-_]GB/i.test(vs[i].lang)) return vs[i]; }
+  for(i=0;i<vs.length;i++){ if(/^en/i.test(vs[i].lang)) return vs[i]; }
+  return vs[0];
+}
+if(SPEAKABLE){ try{ window.speechSynthesis.onvoiceschanged = function(){ if(S.screen==="host") render(); }; }catch(e){} }
+
+/* long lines are split at sentence ends: some engines truncate past ~15s */
+function sentences(txt){
+  var m = String(txt).match(/[^.!?]+[.!?]*\s*/g);
+  if(!m) return [txt];
+  var out = [], i, x;
+  for(i=0;i<m.length;i++){ x = m[i].replace(/^\s+|\s+$/g,""); if(x) out.push(x); }
+  return out.length ? out : [txt];
+}
+function chunk(lines){
+  var out = [], i, j;
+  for(i=0;i<lines.length;i++){
+    var L = lines[i], txt = L.s || L.t;
+    if(txt.length <= 190){ out.push(L); continue; }
+    var parts = sentences(txt), cap = sentences(L.t);
+    for(j=0;j<parts.length;j++){
+      out.push({ t: cap[j] || L.t, s: parts[j], r:L.r, p:L.p, g: (j===parts.length-1 ? L.g : 120) });
+    }
+  }
+  return out;
+}
+
+function stopSpeech(){
+  V.gen++; V.live = false;
+  if(SPEAKABLE){ try{ window.speechSynthesis.cancel(); }catch(e){} }
+  paintNarr();
+}
+function narrate(lines){
+  stopSpeech();
+  V.last = lines;
+  if(!V.on || !SPEAKABLE || !lines || !lines.length){ paintNarr(); return; }
+  var q = chunk(lines), g = ++V.gen, k = 0;
+  V.live = true; paintNarr();
+  function step(){
+    if(g !== V.gen) return;
+    if(k >= q.length){ V.live = false; paintNarr(); return; }
+    var L = q[k];
+    paintNarr(L.t);
+    var u = new SpeechSynthesisUtterance(L.s || L.t);
+    var voice = pickVoice(); if(voice) u.voice = voice;
+    u.lang = (voice && voice.lang) || "en-GB";
+    u.rate = Math.max(0.5, Math.min(1.6, (L.r || 1) * V.rate));
+    u.pitch = L.p || 0.96;
+    u.onend = function(){ if(g!==V.gen) return; k++; setTimeout(step, L.g == null ? 260 : L.g); };
+    u.onerror = function(){ if(g!==V.gen) return; k++; setTimeout(step, 120); };
+    try{ window.speechSynthesis.speak(u); }
+    catch(e){ k++; setTimeout(step, 60); }
+  }
+  step();
+}
+
+function paintNarr(caption){
+  var n = el("narr"); if(!n) return;
+  if(!V.on || !SPEAKABLE || S.screen==="host"){ n.hidden = true; n.innerHTML = ""; return; }
+  n.hidden = false;
+  if(V.live){
+    n.innerHTML = '<span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>'
+      + '<p>' + esc(caption || "…") + '</p>'
+      + '<button class="narrbtn" id="narrStop" aria-label="Stop the narrator">stop</button>';
+    el("narrStop").onclick = function(){ stopSpeech(); };
+  } else {
+    n.innerHTML = '<span class="eq idle" aria-hidden="true"><i></i><i></i><i></i><i></i></span>'
+      + '<p class="idle">Narrator on</p>'
+      + '<button class="narrbtn" id="narrAgain" aria-label="Play the narration again">replay</button>';
+    el("narrAgain").onclick = function(){ narrate(V.last); };
+  }
+}
+
+/* ── Sound cues, synthesised ─────────────────────────────────────────── */
+var AC = null;
+function ac(){
+  if(!V.fx) return null;
+  try{
+    if(!AC){ var C = window.AudioContext || window.webkitAudioContext; if(!C) return null; AC = new C(); }
+    if(AC.state === "suspended"){ AC.resume(); }
+    return AC;
+  }catch(e){ return null; }
+}
+function tone(c,at,f,dur,type,g){
+  var o=c.createOscillator(), gn=c.createGain();
+  o.type=type||"sine"; o.frequency.setValueAtTime(f,at);
+  gn.gain.setValueAtTime(0.0001,at);
+  gn.gain.exponentialRampToValueAtTime(g||0.09,at+0.02);
+  gn.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  o.connect(gn); gn.connect(c.destination); o.start(at); o.stop(at+dur+0.05);
+}
+function noise(c,at,dur,f,g,sweepTo){
+  var n=Math.max(1,Math.floor(c.sampleRate*dur)), b=c.createBuffer(1,n,c.sampleRate), d=b.getChannelData(0), i;
+  for(i=0;i<n;i++){ d[i]=(Math.random()*2-1)*(1-i/n); }
+  var s=c.createBufferSource(); s.buffer=b;
+  var flt=c.createBiquadFilter(); flt.type="lowpass";
+  flt.frequency.setValueAtTime(f,at);
+  if(sweepTo){ flt.frequency.linearRampToValueAtTime(sweepTo,at+dur); }
+  var gn=c.createGain(); gn.gain.setValueAtTime(g,at); gn.gain.exponentialRampToValueAtTime(0.0001,at+dur);
+  s.connect(flt); flt.connect(gn); gn.connect(c.destination); s.start(at); s.stop(at+dur);
+}
+function cue(kind){
+  var c = ac(); if(!c) return; var t = c.currentTime + 0.01;
+  if(kind==="found"){                      /* oak splits, a bell answers */
+    noise(c,t,0.10,900,0.32,300);
+    tone(c,t+0.05,587.33,0.22,"sine",0.07);
+    tone(c,t+0.16,880,0.55,"sine",0.06);
+  } else if(kind==="wrong"){               /* a dull knock on a shut lid */
+    noise(c,t,0.09,220,0.22,90);
+    tone(c,t,98,0.16,"triangle",0.05);
+  } else if(kind==="open"){                /* the hinge gives, then light */
+    noise(c,t,0.55,240,0.16,1400);
+    tone(c,t+0.50,392,1.1,"sine",0.07);
+    tone(c,t+0.66,523.25,1.3,"sine",0.06);
+    tone(c,t+0.86,784,1.6,"sine",0.05);
+  }
+}
+
+/* ── The script ──────────────────────────────────────────────────────── */
+var SAY = {
+title:[
+ {t:"Listen.", r:.86, g:520},
+ {t:"Between the island of Falster, and the islands of Bogø and Møn, there runs a narrow green water.",
+  s:"Between the island of Falster, and the islands of Boh-guh and Muhn, there runs a narrow green water.", g:280},
+ {t:"The old documents call it Gronesund. The green sound.", s:"The old documents call it Grone-soon. The green sound.", r:.9, g:420},
+ {t:"Kings taxed it. A Swedish army walked across it — on foot, on the ice."},
+ {t:"A ruined noblewoman rowed a ferry over it, and told the greatest playwright in Denmark that she had never in her life been happier.", g:360},
+ {t:"And on one night in 1872, the sea came back over the top of it.",
+  s:"And on one night in eighteen seventy-two, the sea came back over the top of it.", r:.88, g:520},
+ {t:"Somewhere along this shore there is a box.", r:.86, g:300},
+ {t:"It has been shut since 1711.", s:"It has been shut since seventeen eleven.", r:.82, p:.9, g:600},
+ {t:"You have forty-five minutes.", r:.9}
+],
+brief:[
+ {t:"Summer, 1711.", s:"Summer, seventeen eleven.", r:.86, g:400},
+ {t:"Plague is loose in Copenhagen, and a young man called Ludvig Holberg is running for his life. South. To the coast. To a ferry house at the edge of the water.",
+  s:"Plague is loose in Copenhagen, and a young man called Loodvig Hol-bair is running for his life. South. To the coast. To a ferry house at the edge of the water.", g:340},
+ {t:"The woman who brings him his supper is called Marie Grubbe.",
+  s:"The woman who brings him his supper is called Mah-ree-eh Groo-beh.", r:.88, g:420},
+ {t:"She was born to one of the great families of Denmark. She was married to the king's own half-brother.", g:240},
+ {t:"And here she is. In a wet apron. At the end of the world. Telling him she is content.", r:.88, g:420},
+ {t:"He wrote about her. He could not stop writing about her.", g:340},
+ {t:"What he did not write about, was the casket.", r:.84, p:.9, g:560},
+ {t:"She cut one word across five splinters of its lid, and gave them to the sound."},
+ {t:"Five stops. Five splinters. Each one carries a letter — and the letter's place in the word.", g:300},
+ {t:"Gather all five, and whatever is inside is yours.", g:420},
+ {t:"Off you go.", r:.88}
+],
+walk:[
+ [{t:"First stop. The water's edge, where the ferry came in.", g:280},
+  {t:"Stand where you can see across, and think about money.", g:300},
+  {t:"Everything that ever crossed here — every ox, every barrel, every man on foot — was worth a number to somebody.", r:.9}],
+ [{t:"Second stop. Now look at that water.", g:300},
+  {t:"And imagine it solid.", r:.82, g:520},
+  {t:"Imagine an army walking on it.", r:.84, p:.9}],
+ [{t:"Third stop. The ferry house.", g:520},
+  {t:"This is the one with a body in it.", r:.82, p:.9}],
+ [{t:"Fourth stop. Get yourself some height, if this island has any to offer.", g:260},
+  {t:"You want to be standing where a fire would be seen for miles.", r:.9}],
+ [{t:"Last stop. Down to the dike. Or the shore. Somewhere you can see how high the water is today.", g:380},
+  {t:"Because you are about to find out how high it got.", r:.86, p:.9}]
+],
+station:[
+ [{t:"The green sound. It is in the written record as early as the 1180s.",
+   s:"The green sound. It is in the written record as early as the eleven eighties.", g:240},
+  {t:"And by the 1230s the king's clerks are here with their books — because a crossing is a chokepoint, and a chokepoint is money.",
+   s:"And by the twelve thirties the king's clerks are here with their books. Because a crossing is a chokepoint, and a chokepoint is money.", g:400},
+  {t:"Someone has scratched a note into the margin of the toll board. And the salt has eaten the fourth line.", g:460},
+  {t:"Read the board. Find the sum.", r:.86, p:.92}],
+ [{t:"The winter the sea turned to stone.", r:.84, p:.9, g:520},
+  {t:"January, 1658. Karl the Tenth Gustav walks his army across the frozen Little Belt. Seven thousand men. On ice. Over open sea.",
+   s:"January, sixteen fifty-eight. Karl the Tenth Gustav walks his army across the frozen Little Belt. Seven thousand men. On ice. Over open sea.", g:260},
+  {t:"And he keeps going. Langeland. Lolland. Falster.", s:"And he keeps going. Lang-eh-land. Lol-land. Falster.", r:.86, g:420},
+  {t:"Out there, a warship sits frozen into the sound like a fly in amber, and it will not move again until spring.", g:340},
+  {t:"But the ice is not honest. It is a foot thick here, and rotten twenty paces that way.", g:260},
+  {t:"The only men who know the difference are the men who fish it. And one of them left directions.", g:400},
+  {t:"No names. Only steps.", r:.82, p:.9}],
+ [{t:"Now.", r:.8, g:600},
+  {t:"Marie Grubbe.", s:"Mah-ree-eh Groo-beh.", r:.8, p:.9, g:620},
+  {t:"Married at seventeen to Ulrik Frederik Gyldenløve — the king's half-brother, the finest match in the kingdom.",
+   s:"Married at seventeen to Ool-rik Frederik Gyul-en-luh-veh. The king's half-brother. The finest match in the kingdom.", g:280},
+  {t:"Divorced. Married again. Ruined.", r:.82, g:460},
+  {t:"And then, at the bottom of that very long fall, she marries a man twenty years younger than herself, and comes here — to row strangers across a cold strait for coppers.", g:380},
+  {t:"And when Holberg asks her, with the beautiful rudeness of the young, how she can possibly bear it —",
+   s:"And when Hol-bair asks her, with the beautiful rudeness of the young, how she can possibly bear it —", g:400},
+  {t:"she tells him she is happier now.", r:.84, p:.92, g:620},
+  {t:"The nineteenth of May, 1711. A drinking party at the ferry house goes wrong.",
+   s:"The nineteenth of May, seventeen eleven. A drinking party at the ferry house goes wrong.", g:260},
+  {t:"Her husband picks up a gun. And a skipper from Dragør does not go home.",
+   s:"Her husband picks up a gun. And a skipper from Drah-guhr does not go home.", r:.84, p:.9, g:520},
+  {t:"In the hour before the bailiff arrives, a casket leaves that house. Four people watched it go.", g:340},
+  {t:"And the parish clerk, who knew this village extremely well, wrote in the margin:", g:400},
+  {t:"exactly one of them is telling the truth.", r:.82, p:.9}],
+ [{t:"1813. Denmark is at war with Britain.", s:"Eighteen thirteen. Denmark is at war with Britain.", g:280},
+  {t:"The whole coast is watched. On every headland there are men sitting up all night beside a heap of tar and brushwood, waiting to set it alight.", g:280},
+  {t:"One fire lights the next. The country can be told in an hour.", r:.88, g:460},
+  {t:"And in the middle of all this, the Postmaster General sits down — and issues a price list.", g:420},
+  {t:"Because of course he does.", r:.86, p:.92, g:560},
+  {t:"But look at the top of this copy. Somebody else has written on it. In a different hand.", r:.86}],
+ [{t:"The thirteenth of November, 1872.", s:"The thirteenth of November, eighteen seventy-two.", r:.84, g:520},
+  {t:"The wind comes round, and it does not stop. Thirty-two metres a second — a hurricane, over Lolland, Falster and Møn.",
+   s:"The wind comes round, and it does not stop. Thirty-two metres a second. A hurricane, over Lol-land, Falster and Muhn.", g:280},
+  {t:"It pushes the Baltic west. And west. And the water climbs three metres above anything a living person has ever seen.", r:.9, g:340},
+  {t:"It comes over the fields in the dark. Close to a hundred people drown on land. Two hundred ships are broken open.", r:.86, p:.92, g:520},
+  {t:"Afterwards, the parish clerk wrote five lines about it.", g:400},
+  {t:"They are terrible verse. And they are not about the flood.", r:.86, p:.92}]
+],
+solved:[
+ [{t:"Thirty-five.", r:.84, g:400},
+  {t:"An ox is six, a barrel is four, and a man is one — a man being, as ever, the cheapest thing on the list.", g:420},
+  {t:"Something comes away from the board in your hand. A splinter of oak, with a letter cut into it.", r:.9}],
+ [{t:"B, four. The mill on the rise.", r:.86, g:380},
+  {t:"Of course it is. It is the one thing you can see from out on that ice in any weather.", g:340},
+  {t:"Second splinter.", r:.88}],
+ [{t:"The loft.", r:.82, g:480},
+  {t:"Only the tollman told the truth — and even he only told you what did not happen.", g:400},
+  {t:"That, right there, is a village. Third splinter.", r:.88}],
+ [{t:"Every fifth word. The fire is lit at Bavnen.", s:"Every fifth word. The fire is lit at Bow-nen.", r:.86, g:400},
+  {t:"Three place names sitting in plain sight to waste your time, and the real one buried in the grammar.", g:340},
+  {t:"Fourth splinter.", r:.88}],
+ [{t:"Diget. The dike.", s:"Dee-yet. The dike.", r:.84, g:420},
+  {t:"They read the water, and then they built against it. And it is still standing. And it is the only reason you are standing dry.", r:.88, g:420},
+  {t:"That is five.", r:.84, p:.9}]
+],
+assemble:[
+ {t:"Five splinters.", r:.84, g:480},
+ {t:"The sound gave them up in its own order, not yours. But each one is numbered. Each one knows its place.", g:400},
+ {t:"One word. Five letters. Danish.", r:.82, p:.92, g:560},
+ {t:"Say it out loud at the water.", r:.82, p:.9}
+],
+finale:[
+ {t:"Skrin.", s:"Skreen.", r:.78, p:.9, g:620},
+ {t:"It is the Danish for a small chest.", g:340},
+ {t:"The lid comes up.", r:.8, p:.88, g:800},
+ {t:"And there is no gold in it.", r:.82, g:420},
+ {t:"There was never going to be gold in it.", r:.84, p:.92, g:620},
+ {t:"There is a bundle of letters, in a hand that had been taught to write like a nobleman's daughter — because it was one.", g:380},
+ {t:"There is a paper granting the right to row people across Grønsund, and to keep an inn on the Falster shore.",
+  s:"There is a paper granting the right to row people across Gruhn-soon, and to keep an inn on the Falster shore.", g:300},
+ {t:"The last thing she owned. The only thing she wanted.", r:.84, p:.92, g:560},
+ {t:"And there is one line, written the summer the young playwright came and asked her how she could possibly bear it.", g:620},
+ {t:"Jeg har det bedre nu.", s:"Yai har deh beh-dreh noo.", r:.72, p:.9, g:700},
+ {t:"I am better off now.", r:.78, p:.9, g:800},
+ {t:"She died here in 1718.", s:"She died here in seventeen eighteen.", r:.84, g:340},
+ {t:"Holberg never got over it. Neither, frankly, did Denmark.",
+  s:"Hol-bair never got over it. Neither, frankly, did Denmark.", g:560},
+ {t:"You may go.", r:.8, p:.9}
+]
+};
+
 /* ── Screens ─────────────────────────────────────────────────────────── */
 function render(){
   drawSplints(); tickClock();
   var a = el("app"), d = el("dock");
   d.innerHTML = "";
   window.scrollTo(0,0);
+  el("sndBtn").className = "iconbtn " + (V.on && SPEAKABLE ? "on" : "off");
+  el("sndBtn").textContent = (V.on && SPEAKABLE) ? "🔊" : "🔇";
+  el("sndBtn").hidden = !SPEAKABLE;
   if(S.screen==="title") screenTitle(a);
   else if(S.screen==="brief") screenBrief(a);
   else if(S.screen==="walk") screenWalk(a);
@@ -507,17 +806,21 @@ function screenTitle(a){
       + '<dt class="t">PLAYERS</dt><dd>2–6, one phone between you</dd>'
       + '<dt class="t">WALK</dt><dd>Five short stops, or play it all from one bench</dd>'
       + '<dt class="t">NEEDED</dt><dd>Nothing. No pens, no printing, no signal after loading.</dd>'
+      + (SPEAKABLE ? '<dt class="t">SOUND</dt><dd>There is a narrator. Turn your volume up, or switch it off with the speaker in the corner.</dd>' : '')
     + '</div></div>'
+    + (SPEAKABLE ? '<button class="btn ghost" id="hear" style="margin-bottom:8px">🔊 Hear the opening</button>' : '')
     + '<button class="btn flame" id="go">Begin</button>'
     + '<div class="btnrow" style="margin-top:8px">'
       + '<button class="btn ghost" id="hostBtn">Set up the route</button>'
       + (S.solved.length ? '<button class="btn ghost" id="resume">Resume ('+S.solved.length+'/5)</button>' : '')
     + '</div>'
     + '</div>';
+  if(el("hear")) el("hear").onclick = function(){ narrate(SAY.title); };
   el("go").onclick = function(){
     if(!S.started){ S.started = Date.now(); }
     S.screen="brief"; render();
   };
+  V.last = SAY.title; paintNarr();
   el("hostBtn").onclick = function(){ S.screen="host"; render(); };
   if(el("resume")) el("resume").onclick = function(){ S.screen = S.solved.length>=5 ? "assemble" : "walk"; render(); };
 }
@@ -537,6 +840,7 @@ function screenBrief(a){
       + '</ul></div>'
     + '<button class="btn flame" id="next">Set off</button>';
   el("next").onclick = function(){ S.screen="walk"; render(); };
+  narrate(SAY.brief);
 }
 
 function screenWalk(a){
@@ -549,10 +853,42 @@ function screenWalk(a){
     + '<div class="stepline"><span class="year">'+st.year+'</span><span class="place">'+esc(mode ? (r.name||st.place) : st.place)+'</span></div>'
     + (mode
         ? '<p class="small">Walk there, stand where you can see the water if you can, then open the puzzle. If the spot is fenced, flooded or simply not there any more — this is a coast that moves — stand as near as you like.</p>'
-          + '<div class="btnrow" style="margin-bottom:10px"><a class="btn ghost sm" style="flex:1;text-align:center;text-decoration:none;line-height:1.4" href="'+mapLink(i)+'" target="_blank" rel="noopener">Open in maps</a></div>'
+          + '<div class="btnrow" style="margin-bottom:10px"><button class="btn ghost sm" style="flex:1" id="mapBtn">Open in maps</button></div>'
+          + '<div id="mapFall"></div>'
         : '<p class="small">Playing from one spot. Read it aloud — it works better out loud.</p>')
     + '<button class="btn flame" id="next">We’re here — open it</button>';
   el("next").onclick = function(){ S.screen="station"; render(); };
+  if(el("mapBtn")) el("mapBtn").onclick = function(){ openMaps(i); };
+  narrate(SAY.walk[i]);
+}
+
+/* Artifact and in-app browsers often block window.open. Detect it and hand
+   the player something they can use by hand instead of a dead button.     */
+function openMaps(i){
+  var url = mapLink(i), q = (S.route[i] && (S.route[i].q || S.route[i].name)) || "Grønsund, Falster, Denmark", w = null;
+  try{ w = window.open(url, "_blank", "noopener"); }catch(e){ w = null; }
+  if(w){ try{ w.opener = null; }catch(e){} return; }
+  var box = el("mapFall"); if(!box) return;
+  box.innerHTML =
+    '<div class="mapfall"><p class="small" style="margin:0">This browser will not let the game open another tab. Search for this in your own maps app:</p>'
+    + '<code class="q" id="mapQ">' + esc(q) + '</code>'
+    + '<div class="btnrow"><button class="btn ghost sm" id="mapCopy">Copy it</button>'
+    + '<a class="btn ghost sm" style="text-align:center;text-decoration:none;line-height:1.5" href="' + url + '">Try the link</a></div></div>';
+  el("mapCopy").onclick = function(){
+    var btn = el("mapCopy");
+    function done(){ btn.textContent = "Copied"; setTimeout(function(){ btn.textContent = "Copy it"; }, 1600); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(q).then(done, select);
+    } else { select(); }
+    function select(){
+      try{
+        var r = document.createRange(); r.selectNodeContents(el("mapQ"));
+        var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+        btn.textContent = "Selected — hold to copy";
+        setTimeout(function(){ btn.textContent = "Copy it"; }, 2400);
+      }catch(e){}
+    }
+  };
 }
 
 function buildChart(){
@@ -645,12 +981,14 @@ function screenStation(a, d){
     if(!v){ return; }
     if(st.accept.indexOf(v) > -1){ solve(); return; }
     var msg = st.near[v] || null;
+    cue("wrong");
     fb.className = "feedback no";
     fb.textContent = msg || "Not that. Try again, or open a hint.";
     input.classList.remove("shake"); void input.offsetWidth; input.classList.add("shake");
   }
   el("sub").onclick = submit;
   input.addEventListener("keydown", function(e){ if(e.key==="Enter") submit(); });
+  narrate(SAY.station[i]);
 }
 
 function solve(){
@@ -661,6 +999,7 @@ function solve(){
   }
   var a = el("app"), d = el("dock");
   d.innerHTML = "";
+  cue("found");
   drawSplints();
   a.innerHTML =
     '<p class="eyebrow">Stop '+(i+1)+' · solved</p>'
@@ -682,6 +1021,7 @@ function solve(){
   };
   save();
   window.scrollTo(0,0);
+  narrate(SAY.solved[i]);
 }
 
 function screenAssemble(a, d){
@@ -706,12 +1046,14 @@ function screenAssemble(a, d){
     if(v === "skrin" || v === "skrinet" || v === "etskrin"){
       S.finished = Date.now(); S.screen="finale"; render(); return;
     }
+    cue("wrong");
     fb.className="feedback no";
     fb.textContent = (v.length===5 ? "Five letters, but not the right five. Check the numbers." : "Five letters. Sort them by their number.");
     input.classList.remove("shake"); void input.offsetWidth; input.classList.add("shake");
   }
   el("sub").onclick = submit;
   input.addEventListener("keydown", function(e){ if(e.key==="Enter") submit(); });
+  narrate(SAY.assemble);
 }
 
 function screenFinale(a){
@@ -752,6 +1094,8 @@ function screenFinale(a){
     + '</div>';
   el("again").onclick = function(){ reset(); };
   el("hostBtn").onclick = function(){ S.screen="host"; render(); };
+  cue("open");
+  narrate(SAY.finale);
 }
 
 function reset(){
@@ -775,6 +1119,24 @@ function screenHost(a){
       + '<p class="small">The suggested stops sit within a short walk of each other on the Falster shore, around Næs east of Stubbekøbing. Rename them to whatever suits your group — a garden, a harbour, a hotel corridor. The puzzles do not depend on anything you find there.</p>'
       + rows
       + '<div class="btnrow"><button class="btn ghost sm" id="resetRoute">Restore suggested stops</button></div>'
+    + '</div>'
+    + '<div class="card"><h3>The narrator</h3>'
+      + (SPEAKABLE
+        ? '<p class="small">The narration is spoken by your phone, not streamed, so it works with no signal. Voices differ wildly between devices — try a few. The narrator can be silenced at any time with the speaker in the top corner.</p>'
+          + '<label style="display:flex;gap:10px;align-items:flex-start;font-size:.92rem;margin-bottom:12px">'
+          + '<input type="checkbox" id="narrTog" ' + (V.on?"checked":"") + ' style="margin-top:4px">'
+          + '<span>Narrator on</span></label>'
+          + '<label style="display:flex;gap:10px;align-items:flex-start;font-size:.92rem;margin-bottom:14px">'
+          + '<input type="checkbox" id="fxTog" ' + (V.fx?"checked":"") + ' style="margin-top:4px">'
+          + '<span>Sound effects — the splinter, the shut lid, the box opening</span></label>'
+          + '<label class="field"><span>Voice</span><select class="set" id="voiceSel">' + voiceOptions() + '</select></label>'
+          + '<label class="field"><span>Pace</span><select class="set" id="rateSel">'
+            + '<option value="0.82"' + (V.rate<0.88?" selected":"") + '>Slow — for a big group outdoors</option>'
+            + '<option value="0.95"' + (V.rate>=0.88&&V.rate<1.05?" selected":"") + '>Storyteller</option>'
+            + '<option value="1.12"' + (V.rate>=1.05?" selected":"") + '>Brisk</option>'
+          + '</select></label>'
+          + '<div class="btnrow"><button class="btn ghost sm" id="testVoice">Test the voice</button></div>'
+        : '<p class="small" style="margin:0">This browser has no speech synthesis, so the game runs silently. Everything is on screen — read the story parts aloud yourself; it works.</p>')
     + '</div>'
     + '<div class="card"><h3>Walking or sitting</h3>'
       + '<label style="display:flex;gap:10px;align-items:flex-start;font-size:.92rem">'
@@ -807,12 +1169,42 @@ function screenHost(a){
     };
   });
   el("walkTog").onchange = function(){ S.walking = el("walkTog").checked; save(); };
+  if(el("narrTog")) el("narrTog").onchange = function(){ V.on = el("narrTog").checked; saveVoice(); if(!V.on) stopSpeech(); render(); };
+  if(el("fxTog")) el("fxTog").onchange = function(){ V.fx = el("fxTog").checked; saveVoice(); if(V.fx) cue("found"); };
+  if(el("voiceSel")) el("voiceSel").onchange = function(){ V.uri = el("voiceSel").value || null; saveVoice(); testVoice(); };
+  if(el("rateSel")) el("rateSel").onchange = function(){ V.rate = parseFloat(el("rateSel").value); saveVoice(); testVoice(); };
+  if(el("testVoice")) el("testVoice").onclick = testVoice;
   el("resetRoute").onclick = function(){ S.route = JSON.parse(JSON.stringify(DEFAULT_ROUTE)); save(); render(); };
   el("back").onclick = function(){
     S.screen = S.started ? (S.solved.length>=5 ? "assemble" : "walk") : "title"; render();
   };
   el("wipe").onclick = function(){ if(confirm("Erase progress and start over?")) reset(); };
 }
+
+function voiceOptions(){
+  var vs = voices(), out = '<option value="">Automatic — best English voice on this device</option>', i, v;
+  for(i=0;i<vs.length;i++){
+    v = vs[i];
+    if(!/^en/i.test(v.lang) && !/^da/i.test(v.lang)) continue;
+    out += '<option value="' + esc(v.voiceURI) + '"' + (V.uri===v.voiceURI ? " selected" : "") + '>'
+        + esc(v.name) + ' (' + esc(v.lang) + ')</option>';
+  }
+  return out;
+}
+function testVoice(){
+  narrate([{t:"The green sound. Kings taxed it, and an army walked across it on the ice.", r:.9}]);
+}
+
+el("sndBtn").onclick = function(){
+  V.on = !V.on; saveVoice();
+  el("sndBtn").className = "iconbtn " + (V.on ? "on" : "off");
+  el("sndBtn").textContent = V.on ? "🔊" : "🔇";
+  if(V.on){ narrate(V.last); } else { stopSpeech(); }
+};
+
+/* stop talking when the phone is pocketed or the player switches app */
+document.addEventListener("visibilitychange", function(){ if(document.hidden) stopSpeech(); });
+window.addEventListener("pagehide", function(){ stopSpeech(); });
 
 el("menuBtn").onclick = function(){
   if(S.screen==="host"){ S.screen = S.started ? (S.solved.length>=5?"assemble":"walk") : "title"; }

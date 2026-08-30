@@ -35,8 +35,19 @@ answer away.
 ## The narrator
 
 Every screen is narrated aloud — the opening, each stop, each solve, the ending.
-The voice is the device's own speech synthesis (Web Speech API), so it needs no
-network, no audio files and no permission prompt.
+
+**Recorded narration** ships with the game: 6.3 minutes across 19 MP3 files in
+`audio/`, about 2.3 MB, one file per screen with the authored pauses baked in.
+It was rendered offline with [Piper](https://github.com/rhasspy/piper) (voice
+`en-us-ryan-high`) from the same `SAY` script the app uses, so the two can never
+drift apart. `audio/cues.json` timings are inlined into the page at build time;
+the caption strip follows playback via `timeupdate`, so the line on screen is the
+line being spoken.
+
+**Device speech synthesis is the fallback.** If the audio fails to load or play,
+or the host ticks *Use my device's own voice* in the setup screen, the game falls
+back to the Web Speech API and behaves exactly as it did before the recordings
+existed. Nothing is streamed either way.
 
 - **Danish is spelled phonetically for the voice.** The caption reads `Grønsund`,
   the narrator is handed `Gruhn-soon`; likewise `Møllen`/`Muh-len`,
@@ -66,9 +77,24 @@ the dike. Stop names are editable in the app (☰ → Set up the route), and the
 puzzles do not depend on finding anything in the real world, so the game also works
 from a single bench, a garden or indoors. Turn off walking mode for that.
 
-**Open in maps** tries `window.open`. Sandboxed embeds (and some in-app browsers)
-block that silently, so the button detects the block and falls back to showing the
-place name as selectable text with a copy button, rather than doing nothing.
+### Stops and coordinates
+
+Stop 1 is pinned to Grønsund Færgegård (Gammel Færgevej 6) at
+`54.885831, 12.119331`, which is on the public record. The other four stops
+describe a shoreline rather than an address, so they ship **unpinned** rather than
+sending players to a coordinate nobody verified. In ☰ → The route each stop has a
+coordinate field that accepts `54.885831, 12.119331` or a pasted Google Maps URL,
+plus a **Use my location** button — walk the route once and pin each stop where
+you are standing.
+
+When a stop has a coordinate, **Open in maps** hands over the exact point rather
+than a place-name search, which opens the maps app instead of a web search and
+works in Google Maps, Apple Maps and anything else. **Copy the spot** puts the
+coordinate on the clipboard for apps the link cannot reach.
+
+`window.open` is blocked silently inside sandboxed embeds and some in-app
+browsers, so the button detects the block and falls back to showing the
+coordinate as selectable text with a copy button, rather than doing nothing.
 
 ## History
 

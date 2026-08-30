@@ -1,596 +1,601 @@
 {
 "title": {
-"dur": 33.37,
+"dur": 42.3,
 "cues": [
 {
 "t": "Listen.",
 "start": 0.0,
-"end": 0.325
+"end": 0.8
 },
 {
 "t": "Between the island of Falster, and the islands of Bog\u00f8 and M\u00f8n, there runs a narrow green water.",
-"start": 0.845,
-"end": 5.791
+"start": 1.32,
+"end": 8.04
 },
 {
 "t": "The old documents call it Gronesund. The green sound.",
-"start": 6.071,
-"end": 9.299
+"start": 8.32,
+"end": 12.672
 },
 {
 "t": "Kings taxed it. A Swedish army walked across it \u2014 on foot, on the ice.",
-"start": 9.719,
-"end": 14.003
+"start": 13.092,
+"end": 18.164
 },
 {
 "t": "A ruined noblewoman rowed a ferry over it, and told the greatest playwright in Denmark that she had never in her life been happier.",
-"start": 14.263,
-"end": 20.636
+"start": 18.424,
+"end": 26.792
 },
 {
 "t": "And on one night in 1872, the sea came back over the top of it.",
-"start": 20.996,
-"end": 25.664
+"start": 27.152,
+"end": 32.592
 },
 {
 "t": "Somewhere along this shore there is a box.",
-"start": 26.184,
-"end": 28.25
+"start": 33.112,
+"end": 35.992
 },
 {
 "t": "It has been shut since 1711.",
-"start": 28.55,
-"end": 31.07
+"start": 36.292,
+"end": 39.364
 },
 {
 "t": "You have forty-five minutes.",
-"start": 31.67,
-"end": 33.109
+"start": 39.964,
+"end": 42.044
 }
 ]
 },
 "brief": {
-"dur": 44.61,
+"dur": 57.14,
 "cues": [
 {
 "t": "Summer, 1711.",
 "start": 0.0,
-"end": 1.892
+"end": 2.0
 },
 {
 "t": "Plague is loose in Copenhagen, and a young man called Ludvig Holberg is running for his life. South. To the coast. To a ferry house at the edge of the water.",
-"start": 2.292,
-"end": 10.57
+"start": 2.4,
+"end": 13.136
 },
 {
 "t": "The woman who brings him his supper is called Marie Grubbe.",
-"start": 10.91,
-"end": 14.347
+"start": 13.476,
+"end": 18.068
 },
 {
 "t": "She was born to one of the great families of Denmark. She was married to the king's own half-brother.",
-"start": 14.767,
-"end": 19.515
+"start": 18.488,
+"end": 24.28
 },
 {
 "t": "And here she is. In a wet apron. At the end of the world. Telling him she is content.",
-"start": 19.755,
-"end": 24.318
+"start": 24.52,
+"end": 31.832
 },
 {
 "t": "He wrote about her. He could not stop writing about her.",
-"start": 24.738,
-"end": 27.327
+"start": 32.252,
+"end": 36.268
 },
 {
 "t": "What he did not write about, was the casket.",
-"start": 27.667,
-"end": 30.001
+"start": 36.608,
+"end": 39.696
 },
 {
 "t": "She cut one word across five splinters of its lid, and gave them to the sound.",
-"start": 30.561,
-"end": 34.671
+"start": 40.256,
+"end": 45.136
 },
 {
 "t": "Five stops. Five splinters. Each one carries a letter \u2014 and the letter's place in the word.",
-"start": 34.931,
-"end": 39.714
+"start": 45.396,
+"end": 51.412
 },
 {
 "t": "Gather all five, and whatever is inside is yours.",
-"start": 40.014,
-"end": 42.998
+"start": 51.712,
+"end": 55.408
 },
 {
 "t": "Off you go.",
-"start": 43.418,
-"end": 44.347
+"start": 55.828,
+"end": 56.884
 }
 ]
 },
 "assemble": {
-"dur": 12.21,
+"dur": 16.15,
 "cues": [
 {
 "t": "Five splinters.",
 "start": 0.0,
-"end": 1.08
+"end": 1.504
 },
 {
 "t": "The sound gave them up in its own order, not yours. But each one is numbered. Each one knows its place.",
-"start": 1.56,
-"end": 6.831
+"start": 1.984,
+"end": 9.248
 },
 {
 "t": "One word. Five letters. Danish.",
-"start": 7.231,
-"end": 9.425
+"start": 9.648,
+"end": 12.864
 },
 {
 "t": "Say it out loud at the water.",
-"start": 9.985,
-"end": 11.947
+"start": 13.424,
+"end": 15.888
 }
 ]
 },
 "finale": {
-"dur": 43.32,
+"dur": 53.91,
 "cues": [
 {
 "t": "Skrin.",
 "start": 0.0,
-"end": 0.72
+"end": 0.864
 },
 {
 "t": "It is the Danish for a small chest.",
-"start": 1.34,
-"end": 3.209
+"start": 1.484,
+"end": 3.788
 },
 {
 "t": "The lid comes up.",
-"start": 3.549,
-"end": 4.629
+"start": 4.128,
+"end": 5.952
 },
 {
 "t": "And there is no gold in it.",
-"start": 5.429,
-"end": 6.857
+"start": 6.752,
+"end": 9.424
 },
 {
 "t": "There was never going to be gold in it.",
-"start": 7.277,
-"end": 9.03
+"start": 9.844,
+"end": 12.404
 },
 {
 "t": "There is a bundle of letters, in a hand that had been taught to write like a nobleman's daughter \u2014 because it was one.",
-"start": 9.65,
-"end": 14.898
+"start": 13.024,
+"end": 19.68
 },
 {
 "t": "There is a paper granting the right to row people across Gr\u00f8nsund, and to keep an inn on the Falster shore.",
-"start": 15.278,
-"end": 20.804
+"start": 20.06,
+"end": 26.652
 },
 {
 "t": "The last thing she owned. The only thing she wanted.",
-"start": 21.104,
-"end": 23.705
+"start": 26.952,
+"end": 31.0
 },
 {
 "t": "And there is one line, written the summer the young playwright came and asked her how she could possibly bear it.",
-"start": 24.265,
-"end": 29.605
+"start": 31.56,
+"end": 38.056
 },
 {
 "t": "Jeg har det bedre nu.",
-"start": 30.225,
-"end": 32.454
+"start": 38.676,
+"end": 41.22
 },
 {
 "t": "I am better off now.",
-"start": 33.154,
-"end": 34.362
+"start": 41.92,
+"end": 43.712
 },
 {
 "t": "She died here in 1718.",
-"start": 35.162,
-"end": 37.577
+"start": 44.512,
+"end": 47.456
 },
 {
 "t": "Holberg never got over it. Neither, frankly, did Denmark.",
-"start": 37.917,
-"end": 41.678
+"start": 47.796,
+"end": 51.94
 },
 {
 "t": "You may go.",
-"start": 42.238,
-"end": 43.063
+"start": 52.5,
+"end": 53.652
 }
 ]
 },
 "walk1": {
-"dur": 13.24,
+"dur": 15.26,
 "cues": [
 {
 "t": "First stop. The water's edge, where the ferry came in.",
 "start": 0.0,
-"end": 2.972
+"end": 3.776
 },
 {
 "t": "Stand where you can see across, and think about money.",
-"start": 3.252,
-"end": 5.806
+"start": 4.056,
+"end": 7.656
 },
 {
 "t": "Everything that ever crossed here \u2014 every ox, every barrel, every man on foot \u2014 was worth a number to somebody.",
-"start": 6.106,
-"end": 12.979
+"start": 7.956,
+"end": 14.996
 }
 ]
 },
 "station1": {
-"dur": 18.36,
+"dur": 23.31,
 "cues": [
 {
 "t": "The green sound. It is in the written record as early as the 1180s.",
 "start": 0.0,
-"end": 3.994
+"end": 5.248
 },
 {
 "t": "And by the 1230s the king's clerks are here with their books \u2014 because a crossing is a chokepoint, and a chokepoint is money.",
-"start": 4.234,
-"end": 10.619
+"start": 5.488,
+"end": 13.504
 },
 {
 "t": "Someone has scratched a note into the margin of the toll board. And the salt has eaten the fourth line.",
-"start": 11.019,
-"end": 15.896
+"start": 13.904,
+"end": 20.096
 },
 {
 "t": "Read the board. Find the sum.",
-"start": 16.356,
-"end": 18.097
+"start": 20.556,
+"end": 23.052
 }
 ]
 },
 "solved1": {
-"dur": 13.43,
+"dur": 15.7,
 "cues": [
 {
 "t": "Thirty-five.",
 "start": 0.0,
-"end": 0.94
+"end": 1.296
 },
 {
 "t": "An ox is six, a barrel is four, and a man is one \u2014 a man being, as ever, the cheapest thing on the list.",
-"start": 1.34,
-"end": 8.005
+"start": 1.696,
+"end": 8.672
 },
 {
 "t": "Something comes away from the board in your hand. A splinter of oak, with a letter cut into it.",
-"start": 8.425,
-"end": 13.173
+"start": 9.092,
+"end": 15.444
 }
 ]
 },
 "walk2": {
-"dur": 6.7,
+"dur": 8.47,
 "cues": [
 {
 "t": "Second stop. Now look at that water.",
 "start": 0.0,
-"end": 1.939
+"end": 2.928
 },
 {
 "t": "And imagine it solid.",
-"start": 2.239,
-"end": 3.748
+"start": 3.228,
+"end": 5.228
 },
 {
 "t": "Imagine an army walking on it.",
-"start": 4.268,
-"end": 6.439
+"start": 5.748,
+"end": 8.212
 }
 ]
 },
 "station2": {
-"dur": 31.84,
+"dur": 42.78,
 "cues": [
 {
 "t": "The winter the sea turned to stone.",
 "start": 0.0,
-"end": 1.8
+"end": 2.608
 },
 {
 "t": "January, 1658. Karl the Tenth Gustav walks his army across the frozen Little Belt. Seven thousand men. On ice. Over open sea.",
-"start": 2.32,
-"end": 10.888
+"start": 3.128,
+"end": 13.816
 },
 {
 "t": "And he keeps going. Langeland. Lolland. Falster.",
-"start": 11.148,
-"end": 14.201
+"start": 14.076,
+"end": 19.1
 },
 {
 "t": "Out there, a warship sits frozen into the sound like a fly in amber, and it will not move again until spring.",
-"start": 14.621,
-"end": 20.577
+"start": 19.52,
+"end": 26.88
 },
 {
 "t": "But the ice is not honest. It is a foot thick here, and rotten twenty paces that way.",
-"start": 20.917,
-"end": 25.062
+"start": 27.22,
+"end": 33.06
 },
 {
 "t": "The only men who know the difference are the men who fish it. And one of them left directions.",
-"start": 25.322,
-"end": 29.281
+"start": 33.32,
+"end": 39.416
 },
 {
 "t": "No names. Only steps.",
-"start": 29.681,
-"end": 31.585
+"start": 39.816,
+"end": 42.52
 }
 ]
 },
 "solved2": {
-"dur": 8.19,
+"dur": 10.77,
 "cues": [
 {
 "t": "B, four. The mill on the rise.",
 "start": 0.0,
-"end": 2.101
+"end": 2.656
 },
 {
 "t": "Of course it is. It is the one thing you can see from out on that ice in any weather.",
-"start": 2.481,
-"end": 6.545
+"start": 3.036,
+"end": 8.764
 },
 {
 "t": "Second splinter.",
-"start": 6.885,
-"end": 7.93
+"start": 9.104,
+"end": 10.512
 }
 ]
 },
 "walk3": {
-"dur": 4.5,
+"dur": 13.4,
 "cues": [
 {
-"t": "Third stop. The ferry house.",
+"t": "Third stop. Look for the stone.",
 "start": 0.0,
-"end": 1.649
+"end": 2.192
+},
+{
+"t": "It reads: here lay Borrehuset, seventeen-oh-five to seventeen thirty-one. Lived in by Marie Grubbe.",
+"start": 2.532,
+"end": 10.164
 },
 {
 "t": "This is the one with a body in it.",
-"start": 2.169,
-"end": 4.235
+"start": 10.644,
+"end": 13.14
 }
 ]
 },
 "station3": {
-"dur": 50.22,
+"dur": 62.55,
 "cues": [
 {
 "t": "Now.",
 "start": 0.0,
-"end": 0.43
+"end": 0.944
 },
 {
 "t": "Marie Grubbe.",
-"start": 1.03,
-"end": 2.121
+"start": 1.544,
+"end": 3.448
 },
 {
 "t": "Married at seventeen to Ulrik Frederik Gyldenl\u00f8ve \u2014 the king's half-brother, the finest match in the kingdom.",
-"start": 2.741,
-"end": 8.766
+"start": 4.068,
+"end": 11.444
 },
 {
 "t": "Divorced. Married again. Ruined.",
-"start": 9.046,
-"end": 11.183
+"start": 11.724,
+"end": 14.956
 },
 {
 "t": "And then, at the bottom of that very long fall, she marries a man twenty years younger than herself, and comes here \u2014 to row strangers across a cold strait for coppers.",
-"start": 11.643,
-"end": 20.594
+"start": 15.416,
+"end": 25.832
 },
 {
 "t": "And when Holberg asks her, with the beautiful rudeness of the young, how she can possibly bear it \u2014",
-"start": 20.974,
-"end": 25.792
+"start": 26.212,
+"end": 32.356
 },
 {
 "t": "she tells him she is happier now.",
-"start": 26.192,
-"end": 28.131
+"start": 32.756,
+"end": 35.092
 },
 {
 "t": "The nineteenth of May, 1711. A drinking party at the ferry house goes wrong.",
-"start": 28.751,
-"end": 33.407
+"start": 35.712,
+"end": 41.344
 },
 {
 "t": "Her husband picks up a gun. And a skipper from Drag\u00f8r does not go home.",
-"start": 33.667,
-"end": 37.66
+"start": 41.604,
+"end": 46.772
 },
 {
 "t": "In the hour before the bailiff arrives, a casket leaves that house. Four people watched it go.",
-"start": 38.18,
-"end": 42.813
+"start": 47.292,
+"end": 53.5
 },
 {
 "t": "And the parish clerk, who knew this village extremely well, wrote in the margin:",
-"start": 43.153,
-"end": 47.205
+"start": 53.84,
+"end": 58.736
 },
 {
 "t": "exactly one of them is telling the truth.",
-"start": 47.605,
-"end": 49.962
+"start": 59.136,
+"end": 62.288
 }
 ]
 },
 "solved3": {
-"dur": 8.7,
+"dur": 11.14,
 "cues": [
 {
 "t": "The loft.",
 "start": 0.0,
-"end": 0.662
+"end": 0.928
 },
 {
 "t": "Only the tollman told the truth \u2014 and even he only told you what did not happen.",
-"start": 1.142,
-"end": 5.043
+"start": 1.408,
+"end": 6.496
 },
 {
 "t": "That, right there, is a village. Third splinter.",
-"start": 5.443,
-"end": 8.438
+"start": 6.896,
+"end": 10.88
 }
 ]
 },
 "walk4": {
-"dur": 7.15,
+"dur": 9.42,
 "cues": [
 {
 "t": "Fourth stop. Get yourself some height, if this island has any to offer.",
 "start": 0.0,
-"end": 3.692
+"end": 4.768
 },
 {
 "t": "You want to be standing where a fire would be seen for miles.",
-"start": 3.952,
-"end": 6.889
+"start": 5.028,
+"end": 9.156
 }
 ]
 },
 "station4": {
-"dur": 26.8,
+"dur": 32.84,
 "cues": [
 {
 "t": "1813. Denmark is at war with Britain.",
 "start": 0.0,
-"end": 2.949
+"end": 3.392
 },
 {
 "t": "The whole coast is watched. On every headland there are men sitting up all night beside a heap of tar and brushwood, waiting to set it alight.",
-"start": 3.229,
-"end": 10.462
+"start": 3.672,
+"end": 12.488
 },
 {
 "t": "One fire lights the next. The country can be told in an hour.",
-"start": 10.742,
-"end": 14.341
+"start": 12.768,
+"end": 17.136
 },
 {
 "t": "And in the middle of all this, the Postmaster General sits down \u2014 and issues a price list.",
-"start": 14.801,
-"end": 19.375
+"start": 17.596,
+"end": 23.5
 },
 {
 "t": "Because of course he does.",
-"start": 19.795,
-"end": 21.537
+"start": 23.92,
+"end": 25.824
 },
 {
 "t": "But look at the top of this copy. Somebody else has written on it. In a different hand.",
-"start": 22.097,
-"end": 26.543
+"start": 26.384,
+"end": 32.576
 }
 ]
 },
 "solved4": {
-"dur": 9.79,
+"dur": 11.88,
 "cues": [
 {
 "t": "Every fifth word. The fire is lit at Bavnen.",
 "start": 0.0,
-"end": 2.74
+"end": 3.632
 },
 {
 "t": "Three place names sitting in plain sight to waste your time, and the real one buried in the grammar.",
-"start": 3.14,
-"end": 8.132
+"start": 4.032,
+"end": 9.84
 },
 {
 "t": "Fourth splinter.",
-"start": 8.472,
-"end": 9.529
+"start": 10.18,
+"end": 11.62
 }
 ]
 },
 "walk5": {
-"dur": 7.92,
+"dur": 10.86,
 "cues": [
 {
 "t": "Last stop. Down to the dike. Or the shore. Somewhere you can see how high the water is today.",
 "start": 0.0,
-"end": 4.818
+"end": 6.528
 },
 {
 "t": "Because you are about to find out how high it got.",
-"start": 5.198,
-"end": 7.659
+"start": 6.908,
+"end": 10.604
 }
 ]
 },
 "station5": {
-"dur": 30.31,
+"dur": 38.75,
 "cues": [
 {
 "t": "The thirteenth of November, 1872.",
 "start": 0.0,
-"end": 2.961
+"end": 3.632
 },
 {
 "t": "The wind comes round, and it does not stop. Thirty-two metres a second \u2014 a hurricane, over Lolland, Falster and M\u00f8n.",
-"start": 3.481,
-"end": 10.098
+"start": 4.152,
+"end": 12.008
 },
 {
 "t": "It pushes the Baltic west. And west. And the water climbs three metres above anything a living person has ever seen.",
-"start": 10.378,
-"end": 16.88
+"start": 12.288,
+"end": 20.688
 },
 {
 "t": "It comes over the fields in the dark. Close to a hundred people drown on land. Two hundred ships are broken open.",
-"start": 17.22,
-"end": 23.721
+"start": 21.028,
+"end": 29.7
 },
 {
 "t": "Afterwards, the parish clerk wrote five lines about it.",
-"start": 24.241,
-"end": 27.109
+"start": 30.22,
+"end": 34.108
 },
 {
 "t": "They are terrible verse. And they are not about the flood.",
-"start": 27.509,
-"end": 30.052
+"start": 34.508,
+"end": 38.492
 }
 ]
 },
 "solved5": {
-"dur": 9.4,
+"dur": 12.99,
 "cues": [
 {
 "t": "Diget. The dike.",
 "start": 0.0,
-"end": 1.045
+"end": 1.632
 },
 {
 "t": "They read the water, and then they built against it. And it is still standing. And it is the only reason you are standing dry.",
-"start": 1.465,
-"end": 7.792
+"start": 2.052,
+"end": 11.012
 },
 {
 "t": "That is five.",
-"start": 8.212,
-"end": 9.141
+"start": 11.432,
+"end": 12.728
 }
 ]
 }

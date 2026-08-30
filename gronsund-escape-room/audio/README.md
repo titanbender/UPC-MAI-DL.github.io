@@ -1,9 +1,9 @@
 # Narration audio
 
-19 MP3 files, one per screen, 6.3 minutes total, ~2.3 MB.
+19 MP3 files, one per screen, 8.2 minutes total, ~2.9 MB.
 
 Rendered offline with [Piper](https://github.com/rhasspy/piper) neural TTS
-(`en-us-ryan-high`) from the `SAY` script inside `../index.html` — the same
+(`en-gb-alan-low`) from the `SAY` script inside `../index.html` — the same
 lines, phonetic spellings and per-line pauses the app would otherwise hand to
 the device's speech synthesis. Regenerating from that single source keeps the
 audio and the captions from drifting apart.

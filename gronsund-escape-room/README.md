@@ -36,10 +36,10 @@ answer away.
 
 Every screen is narrated aloud — the opening, each stop, each solve, the ending.
 
-**Recorded narration** ships with the game: 6.3 minutes across 19 MP3 files in
-`audio/`, about 2.3 MB, one file per screen with the authored pauses baked in.
+**Recorded narration** ships with the game: 8.2 minutes across 19 MP3 files in
+`audio/`, about 2.9 MB, one file per screen with the authored pauses baked in.
 It was rendered offline with [Piper](https://github.com/rhasspy/piper) (voice
-`en-us-ryan-high`) from the same `SAY` script the app uses, so the two can never
+`en-gb-alan-low`) from the same `SAY` script the app uses, so the two can never
 drift apart. `audio/cues.json` timings are inlined into the page at build time;
 the caption strip follows playback via `timeupdate`, so the line on screen is the
 line being spoken.
@@ -79,18 +79,30 @@ from a single bench, a garden or indoors. Turn off walking mode for that.
 
 ### Stops and coordinates
 
-Stop 1 is pinned to Grønsund Færgegård (Gammel Færgevej 6) at
-`54.885831, 12.119331`, which is on the public record. The other four stops
-describe a shoreline rather than an address, so they ship **unpinned** rather than
-sending players to a coordinate nobody verified. In ☰ → The route each stop has a
-coordinate field that accepts `54.885831, 12.119331` or a pasted Google Maps URL,
-plus a **Use my location** button — walk the route once and pin each stop where
-you are standing.
+All five stops sit inside the old ferry site at Næs, about 5 km east of
+Stubbekøbing. The whole walk is a few hundred metres.
 
-When a stop has a coordinate, **Open in maps** hands over the exact point rather
-than a place-name search, which opens the maps app instead of a web search and
-works in Google Maps, Apple Maps and anything else. **Copy the spot** puts the
-coordinate on the clipboard for apps the link cannot reach.
+| # | Stop | Coordinate | Pin |
+|---|---|---|---|
+| 1 | Grønsund Færgegård — Gl. Færgevej 6 | `54.885831, 12.119331` | recorded |
+| 2 | The shore below, where the ferry bridge ran | `54.886551, 12.119331` | +80 m N |
+| 3 | The Marie Grubbe stone — Gl. Færgevej 10 | `54.885831, 12.118082` | −80 m E |
+| 4 | The high ground behind the ferry site | `54.884211, 12.119331` | −180 m N |
+| 5 | The shore east of the Færgegård | `54.886191, 12.121674` | +40 m N, +150 m E |
+
+Stop 1 is the listed building's own recorded coordinate. Stops 2–5 are measured
+offsets from it — near enough to stand in the right place, but not surveyed. The
+setup screen labels them as such, and **Use my location** re-pins any stop exactly
+for anyone who walks the route first; the coordinate field also accepts a pasted
+Google Maps URL.
+
+Searching Google Maps for *"Grønsund Færgegård"* by name finds nothing — it is a
+listed building, not a map POI. That is why every stop leads with a coordinate:
+a `lat, lng` pair always resolves. Each walk card shows it in a tap-to-select
+field with a **Copy** button, formatted `54.885831, 12.119331` — comma, space,
+six decimals — which pastes straight into Google Maps, Apple Maps, OsmAnd and the
+rest. **Open in maps** hands over the point directly, so it opens the maps app
+instead of a web search.
 
 `window.open` is blocked silently inside sandboxed embeds and some in-app
 browsers, so the button detects the block and falls back to showing the

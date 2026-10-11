@@ -1,0 +1,17 @@
+# Copied to site/netlify.toml by build-site.sh — governs the deployed site.
+[build]
+  publish = "."
+  command = ""
+
+# Narration is stable between deploys; a day is short enough that a
+# re-render still reaches players quickly.
+[[headers]]
+  for = "/*/audio/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# The pages themselves must never be cached, or a fix never lands.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

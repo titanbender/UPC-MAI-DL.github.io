@@ -2,3 +2,7 @@ _site/
 *~
 *.swp
 *.swo
+
+# generated Netlify bundle for the scavenger hunt
+gronsund-escape-room/site/
+gronsund-escape-room/*.zip

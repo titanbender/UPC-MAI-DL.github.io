@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scavenger Hunts</title>
+<meta name="description" content="Narrated outdoor escape rooms you play on a phone, one place at a time.">
+<meta name="theme-color" content="#E3E7E3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#071417" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap">
+<style>
+/* Same tokens as the game, so the hunts index and a hunt feel like one place. */
+:root{
+  --ground:#E3E7E3; --surface:#F5F6F2; --ink:#0F1C1C; --ink-soft:#425657; --ink-faint:#7A8C8B;
+  --line:#C7D0CB; --line-strong:#9EADA8; --brand:#0E3B3E; --verdigris:#4F8377; --flame:#A94B12;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#071417; --surface:#0D2025; --ink:#E7EEEA; --ink-soft:#9CB2AF; --ink-faint:#688180;
+  --line:#1D3940; --line-strong:#31555C; --brand:#8CC8BB; --verdigris:#4F8377; --flame:#E2913F;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --ground:#071417; --surface:#0D2025; --ink:#E7EEEA; --ink-soft:#9CB2AF; --ink-faint:#688180;
+  --line:#1D3940; --line-strong:#31555C; --brand:#8CC8BB; --verdigris:#4F8377; --flame:#E2913F;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif; line-height:1.6;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:34rem; margin:0 auto; padding:56px 18px 72px}
+.eyebrow{font-family:"IM Fell English SC","IM Fell English",Georgia,serif; font-size:13px; letter-spacing:.12em; color:var(--verdigris); margin:0 0 8px}
+h1{font-family:"IM Fell English",Georgia,serif; font-weight:400; font-size:clamp(2.4rem,11vw,3.2rem); line-height:1.05; margin:0 0 .3em; text-wrap:balance}
+p{margin:0 0 1.1em; max-width:33rem}
+.lede{font-size:1.05rem; color:var(--ink-soft)}
+hr{border:0; height:4px; margin:30px 0; background:
+  linear-gradient(var(--line),var(--line)) 0 0/100% 1px no-repeat,
+  linear-gradient(var(--line),var(--line)) 0 3px/100% 1px no-repeat}
+a.hunt{
+  display:block; text-decoration:none; color:inherit; background:var(--surface);
+  border:1px solid var(--line); border-radius:2px; padding:18px; margin-bottom:14px;
+  transition:border-color .15s ease, transform .08s ease;
+}
+a.hunt:hover{border-color:var(--line-strong)}
+a.hunt:active{transform:translateY(1px)}
+a.hunt:focus-visible{outline:2px solid var(--flame); outline-offset:2px}
+a.hunt h2{font-family:"IM Fell English",Georgia,serif; font-weight:400; font-size:1.6rem; margin:0 0 .15em; color:var(--brand)}
+a.hunt .where{font-family:"IM Fell English SC","IM Fell English",Georgia,serif; font-size:.9rem; letter-spacing:.07em; color:var(--ink-soft); display:block; margin-bottom:.6em}
+a.hunt p{font-size:.94rem; color:var(--ink-soft); margin:0 0 .9em}
+a.hunt .meta{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-size:.72rem; letter-spacing:.05em; color:var(--ink-faint)}
+a.hunt .go{color:var(--flame); font-weight:600; font-size:.9rem}
+.foot{font-size:.84rem; color:var(--ink-faint); margin-top:34px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="eyebrow">Outdoor escape rooms</p>
+  <h1>Scavenger Hunts</h1>
+  <p class="lede">Narrated walks built on real history. One phone per group, 30–45 minutes, offline once loaded.</p>
+  <hr>
+
+  <a class="hunt" href="/gronsund/">
+    <h2>The Grønsund Casket</h2>
+    <span class="where">Grønsund · Falster, Denmark</span>
+    <p>Five stops, five centuries. A king’s toll, an army walking on the frozen sound, a ruined noblewoman rowing the ferry, a coast of beacon fires, and the night the sea came back over the top of it.</p>
+    <span class="meta">30–45 MIN · 2–6 PLAYERS · NARRATED</span><br>
+    <span class="go">Play →</span>
+  </a>
+
+  <p class="foot">Everything presented as fact is fact; each hunt ends by listing what was real and what was invented for the puzzles.</p>
+</main>
+</body>
+</html>

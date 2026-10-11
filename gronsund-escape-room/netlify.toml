@@ -1,0 +1,9 @@
+# Netlify, deploying from Git.
+# In the Netlify UI set Base directory to: gronsund-escape-room
+# Everything else is here — the build script assembles site/ so the repo
+# never carries a duplicate copy of the 2.9 MB of narration audio.
+
+[build]
+  base    = "gronsund-escape-room"
+  command = "bash build-site.sh"
+  publish = "site"
